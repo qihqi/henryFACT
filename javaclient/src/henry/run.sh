@@ -1,0 +1,1 @@
+java -classpath ../../lib/swt.jar:../../dist/lib/henry.jar:../../lib/joda-time-2.1.jar:../../lib/carbonado-1.2.3.jar:../../lib/cojen-2.2.3.jar:../../lib/commons-logging-1.1.1.jar:../../lib/mysql-connector-java-5.1.18-bin.jar:. $1
