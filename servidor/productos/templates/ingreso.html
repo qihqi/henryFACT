@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <!-- 
+            {% for x in bodegas %}
+                <p> {{x.id}} {{x.nombre}} </p>
+            {%endfor %}
+        -->
+        <script type="text/javascript" src="/static/jquery-1.7.2.js" ></script>
+        <script type="text/javascript" src="/static/row.js" ></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var a = getRow();
+                $("#insert").append(a);
+            });
+        </script>
+        <style>
+            input.text_field { width : 100px }
+        </style>
+    </head>
+
+    <body>
+        <form id="p" method="post" action="{{action}}">
+            {% csrf_token %}
+            <input type="submit" />
+            {% include "choose_bodega.html" with bodegas=bodegas %}
+            <table id="insert" cellspacing="10px">
+                <tr>
+                    <th> Codigo </th>
+                    <th> Cantidad </th>
+                    <th> Nombre de Producto </th>
+                </tr>
+            </table> 
+        </form>
+    </body>
+</html>

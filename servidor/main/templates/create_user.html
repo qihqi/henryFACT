@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block content %}
+
+{% if form.errors %}
+    
+{% endif %}
+
+{% if creado%}
+    <p> Usuario <b> {{creado}} </b> ha sido creado con exito </p>
+{%endif%}
+
+{% if duplicado%}
+    <p> El usuario que usted intento a crear ya existe </p>
+{%endif%}
+
+<form name="theForm" method="post" action="{% url 'main.views.createUserPage' %}">
+{% csrf_token %}
+{{form.as_p }}
+<input type="submit" value="Crear" />
+<input type="button" value="Cancelar" />
+</form>
+
+{% endblock %}

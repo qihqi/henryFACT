@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script type="text/javascript" src="static/jquery-1.7.2.js"></script>
+        <script type="text/javascript" src="static/row.js" ></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("button").click(function(){
+                    
+                    var a = getRow();
+                    for ( var i = 0; i < 3; i++)
+                        $("#p").append(a[i]);
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+        <h2>This is a heading</h2>
+        <p>This is a paragraph.</p>
+        <p>This is another paragraph.</p>
+        <button>Click me</button>
+        <form id="p" method="get" action="test">
+        <input type="submit" />
+        </form>
+    </body>
+</html>
