@@ -1,0 +1,15 @@
+
+<html>
+    <body>
+        <table>
+            <tr>
+                <th> Codigo </th>
+                <th> Cliente </th>
+                <th> Valor </th>
+            </tr>
+            {% include "snippets/mostrar_venta.html" with nombre="CHEQUE" ordenes=cheques total=ctotal  %}
+            {% include "snippets/mostrar_venta.html" with nombre="EFECTIVO" ordenes=efectivos total=etotal  %}
+            {% include "snippets/mostrar_venta.html" with nombre="TARJETA" ordenes=targetas total=ttotal  %}
+        </table>
+    </body>
+</html>

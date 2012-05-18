@@ -36,6 +36,10 @@ class OrdenDeDespacho(models.Model):
     bodega = models.ForeignKey(Bodega)
     pago = models.CharField(max_length=1) #forma de pago
     precio_modificado = models.BooleanField()
+    #tipos de pago
+    PAGO_EFECTIVO = 'E'
+    PAGO_CHEQUE = 'C'
+    PAGO_TARGETA = 'T'
     class Meta:
         db_table = 'ordenes_de_despacho'
 

@@ -1,0 +1,18 @@
+<tr><td colspan=3 style="{align : 'center';}"> {{name}} </td>
+    {% if not cheques %}
+        <tr><td colspan=3 style="{align : 'center';}"> NO HAY </td> 
+    {%endif%}
+
+    {% for x in ordenes %}
+        <tr>
+            <td> {{x.codigo}} </td>
+            <td> {{x.cliente.fullname}} </td>
+            <td> {{x.total}} </td>
+        </tr>
+    {%endfor %}
+        <!--total de cheque -->
+        <tr>
+            <td>  </td>
+            <td>  </td>
+            <td> {{total}} </td>
+        </tr>
