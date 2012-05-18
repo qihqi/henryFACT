@@ -1,5 +1,12 @@
 # Django settings for servidor project.
 
+## mis seetings - qh
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+## end - qh
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 

@@ -40,5 +40,5 @@ def generatePass(password):
     m = hashlib.sha1()
     m.update(password)
     return m.hexdigest()
-def getUserJava(usename):
+def getUserJava(username):
     return UserJava.objects.get(username=username)

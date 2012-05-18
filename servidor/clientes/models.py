@@ -9,5 +9,10 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=50)
     tipo = models.CharField(max_length=1)
     cliente_desde = models.DateField(auto_now_add=True)
+
+    @property
+    def fullname(self):
+        return self.apellidos + ' ' + self.nombres
+
     class Meta:
         db_table = 'clientes'

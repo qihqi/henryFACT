@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^test$', 'main.views.test'),
     url(r'^cliente/', include('clientes.urls')),
     url(r'^producto/', include('productos.urls')),
+    url(r'^ventas/', include('facturas.urls')),
     # url(r'^servidor/', include('servidor.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
