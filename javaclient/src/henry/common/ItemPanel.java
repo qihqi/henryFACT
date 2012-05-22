@@ -109,6 +109,10 @@ public class ItemPanel extends JPanel {
 				dialog.setVisible(true);
 				
 				prod = (Producto) dialog.result;
+
+				if (prod == null) //producto no encontrado, no haces nada
+					return;
+				
 				codigo.setText(prod.getCodigo());
 				try {
 					loadProduct();
@@ -125,7 +129,8 @@ public class ItemPanel extends JPanel {
 					loadProduct();
 					cantidad.requestFocusInWindow();
 				} catch (RepositoryException ex) {
-					ex.printStackTrace();
+					cantidad.requestFocusInWindow();
+					codigo.requestFocusInWindow();
 				}
 					
 			}
@@ -137,8 +142,19 @@ public class ItemPanel extends JPanel {
 		
 		cantidad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadCantidad();
-				parent.shiftEvent();
+				try {
+					loadCantidad();
+					parent.shiftEvent();
+			
+				}
+				catch (NullPointerException n) {
+					//the product is not loaded
+					codigo.requestFocusInWindow();					
+				}
+				catch (NumberFormatException n) {
+					codigo.requestFocusInWindow();
+					cantidad.requestFocusInWindow();
+				}
 			}
 		});
 		cantidad.addMouseListener(new ReFocusListener(this));
@@ -190,15 +206,15 @@ public class ItemPanel extends JPanel {
 	
 	public void loadCantidad() {
 		if (prod == null)
-			return;
-		try {
-			BigDecimal cant = new BigDecimal(cantidad.getText());
-			BigDecimal precio = (nuevoPrecio == null) ?
-				             prod.getPrecio() : nuevoPrecio;
-		
-			total = precio.multiply(cant);
-		    subtotal.setText(total.toString());
-		}catch( NumberFormatException e) { }
+			throw new NullPointerException();
+		//this throws NumberFormatException
+		BigDecimal cant = new BigDecimal(cantidad.getText());
+		BigDecimal precio = (nuevoPrecio == null) ?
+			             prod.getPrecio() : nuevoPrecio;
+	
+		total = precio.multiply(cant);
+	    subtotal.setText(total.toString());
+	
 	}
 
 	/** Load the item give producto, cantidad, and modified precio 
@@ -312,5 +328,7 @@ public class ItemPanel extends JPanel {
     public boolean precioModificado() {
     	return nuevoPrecio != null;
     }
+    
+    
 	
 }

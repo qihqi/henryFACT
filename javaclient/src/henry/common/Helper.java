@@ -153,5 +153,12 @@ public class Helper {
 		return next;
     }
     
+    static final int MAX_ALERT_LENGTH = 23;
+    
+    public static void alert(String s) {
+    	
+    	(new SimpleDialog(s)).setVisible(true);
+    }
+    
   
 }

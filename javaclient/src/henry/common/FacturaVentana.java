@@ -67,7 +67,6 @@ public class FacturaVentana extends JFrame {
 					cliente.loadCliente(cl);
 					contenido.loadNota(nota);
 				} catch (RepositoryException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -87,9 +86,14 @@ public class FacturaVentana extends JFrame {
 					cliente.loadCliente(cl);
 					contenido.loadNota(nota);
 					
-				} 
+				}
+				catch (NumberFormatException e2) {
+					alert("Codigo de Nota de Venta incorrecta!!");
+					e2.printStackTrace();
+				
+				}
 				catch (RepositoryException e1) {
-					new SimpleDialog("Codigo de Nota de Venta incorrecta!!");
+					alert("Codigo de Nota de Venta incorrecta!!");
 					e1.printStackTrace();
 				}
 			}
@@ -113,6 +117,8 @@ public class FacturaVentana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					save();
+					print();
+					clear();
 				} catch (RepositoryException e1) {
 					
 					e1.printStackTrace();
@@ -166,7 +172,7 @@ public class FacturaVentana extends JFrame {
 			numeroLabel.setText("" + numero);
 			
 			new SimpleDialog("El cambio es " + cambio).setVisible(true);
-			clear();
+			
 		}
 		catch (NumberFormatException e) {
 			new SimpleDialog("Ingrese el valor pagado").setVisible(true);
@@ -175,11 +181,18 @@ public class FacturaVentana extends JFrame {
 	}
 	/*Borrar el contenido */
 	public void clear(){
+		alert("HERE");
 		pago.setText("");
 		contenido.clear();
 		cliente.clear();
 		pedidoField.setText("");
 	}
 
-
+	public void print() {
+		FacturaPrinter printer = new FacturaPrinter(contenido.getItems(),
+													contenido.getSubtotal(),
+				                                    contenido.getTotal(),
+				                                    cliente.getCliente());
+		printer.printFactura();
+	}
 }

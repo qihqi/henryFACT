@@ -32,6 +32,8 @@ public class ModificarPrecio extends JDialog {
 	private boolean is_modified = true;
 	private boolean is_accepted = false;
 	
+	private BigDecimal precio;
+	
 	/**
 	 * Create the dialog.
 	 * @param usuario 
@@ -93,8 +95,14 @@ public class ModificarPrecio extends JDialog {
 		JButton accept = new JButton("Aceptar");
 		accept.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				is_accepted = true;
-				dispose();				
+				try {
+					precio = new BigDecimal(nuevoPrecio.getText());
+					is_accepted = true;
+					dispose();
+				} 
+				catch (NumberFormatException e1) {
+					nuevoPrecio.requestFocusInWindow();
+				}
 			}
 		});
 		buttonPane.add(accept);
@@ -109,11 +117,7 @@ public class ModificarPrecio extends JDialog {
 	public BigDecimal getPrecio() {
 		if (!is_modified)
 			return null;
-		try {
-			return new BigDecimal(nuevoPrecio.getText());
-		} catch (Exception e) {
-			return null;
-		}
+		return precio;
 	}
 
 	public boolean isAccepted() {

@@ -219,7 +219,9 @@ public class ItemContainer extends JPanel {
 	public void setCurrent(ItemPanel item) {
 		current = reverseItem.get(item).intValue();
 	}
-	
+	public ArrayList<ItemPanel> getItems() {
+    	return items;
+    }
 	
 	
 	public long saveFact(String forma) throws ConfigurationException, RepositoryException {
@@ -352,6 +354,9 @@ public class ItemContainer extends JPanel {
 		return total;
 	}
 
+	public BigDecimal getSubtotal() {
+		return subtotal;
+	}
 	public void loadNota(NotaDeVenta laNota) throws RepositoryException {
 		clear();
 		
@@ -369,4 +374,5 @@ public class ItemContainer extends JPanel {
 		}
 				
 	}
+	
 }

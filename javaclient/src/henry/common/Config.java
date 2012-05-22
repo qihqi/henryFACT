@@ -31,6 +31,11 @@ public final class Config {
 	private String password = "no jodas";
 	private String dbName;
 	private String bodega;
+	
+	private Node printNode; 
+	
+	
+	
 	static private Config config = null;
 	
 	private Config(/*String filename*/) 
@@ -53,7 +58,10 @@ public final class Config {
 		bodega = getTagValue("bodega", (Element) nList);
 		dbName = getTagValue("databasename", (Element) nList);
 		//System.out.println(connection + user + isFactura);
-			
+		
+		//cargar impresion
+		printNode = doc.getElementsByTagName("impresion").item(0);
+	
 	}
 	
 	public static void bootstrap() throws RepositoryException {
@@ -77,7 +85,7 @@ public final class Config {
 	  private static String getTagValue(String sTag, Element eElement) {
 		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
 	 
-	        Node nValue = (Node) nlList.item(0);
+	    Node nValue = (Node) nlList.item(0);
 	 
 		return nValue.getNodeValue();
 	  }
@@ -136,10 +144,52 @@ public final class Config {
 	  }
 	  
 	  public static void main(String [] s) throws Exception { 
-		  new Config();
+		//new Config();
+		  double [] res = Config.getConfig().getContenidoSpacing();
+		 System.out.printf("%f, %f, %f", res[0], res[1], res[2]);
+		 System.out.println(Config.getConfig().getLinesPerFactura());
 	  }
 	  
-	  
 	
+	  double [] getImpresionPos(String s) {
+   		Node node = ((Element) printNode)
+				   .getElementsByTagName(s).item(0);
+   		  
+   		double x =  Double.parseDouble(getTagValue("x", (Element) node));
+   		double y =  Double.parseDouble(getTagValue("y", (Element) node));
+   			  
+   		return makePos(x, y);
+	  }
+	  
+	  double [] getContenidoSpacing() {
+			Node node = ((Element) printNode)
+					   .getElementsByTagName("contenido").item(0);
+			
+			NodeList nlList = ((Element) node)
+					           .getElementsByTagName("sp");
+			 
+		    double [] res = new double [4];
+		    for (int i = 0; i < 4; i++) {
+		    	String value = nlList.item(i).getChildNodes().item(0).getNodeValue();
+		    	res[i] = Double.parseDouble(value);
+		    }
+		    return res;
+			
+	  }
+	  double getContenidoVsp() {
+		  return 0;
+	  }
+	  
+	  int getLinesPerFactura() {
+			
+	   		return Integer.parseInt(getTagValue("lineas", (Element) printNode));
+	  }
+	  
+	  double [] makePos(double x, double y) {
+		  double [] pos = new double[2];
+		  pos[0] = x;
+		  pos[1] = y;
+		  return pos;
+	  }
 	
 }
