@@ -13,6 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.joda.time.DateTime;
+
+import com.amazon.carbonado.FetchNoneException;
 import com.amazon.carbonado.RepositoryException;
 
 import net.miginfocom.swing.MigLayout;
@@ -27,8 +30,12 @@ public class ClientePanel extends JPanel {
 	private JButton buscar;
 	private JLabel label;
 	private JTextField codigo;
-	private JLabel nombre;
+	private JTextField nombre;
 	private JCheckBox general;
+	
+	private ItemContainer contenido;
+	
+	private boolean create_client = false; 
 	
 	private void initUI() {
 		buscar = new JButton();
@@ -42,6 +49,8 @@ public class ClientePanel extends JPanel {
 				cliente = (Cliente) dialog.result;
 				nombre.setText(cliente.getApellidos() + " " + cliente.getNombres());
 				codigo.setText(cliente.getCodigo());
+				
+				contenido.getFocus();
 				
 			}
 		});
@@ -57,15 +66,31 @@ public class ClientePanel extends JPanel {
 				try {
 					String code = e.getActionCommand();
 					loadUI(code);
+					
 					general.setSelected(false);
-				} catch(RepositoryException e1) {
+					contenido.getFocus();
+				} 
+				catch (FetchNoneException f) {
+					//Client doesnt exist
+					//engage to create new one
+					nombre.setEditable(true);
+					nombre.requestFocusInWindow();
+					create_client = true;
+				}
+				catch(RepositoryException e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
 		
-		nombre = new JLabel();
+		nombre = new JTextField();
 		nombre.setText("");
+		nombre.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				contenido.getFocus();
+			}
+		});
 		
 		general = new JCheckBox();
 		general.setText("Cliente General");
@@ -89,7 +114,8 @@ public class ClientePanel extends JPanel {
 		add(general, "cell 1 1");
 	}
 	
-	public ClientePanel() {
+	public ClientePanel(ItemContainer contenido_) {
+		contenido = contenido_;
 		initUI();
 	}
 	
@@ -103,10 +129,31 @@ public class ClientePanel extends JPanel {
 		 
 		cliente = getClienteByCode(clientCode);
 		nombre.setText(cliente.getApellidos() + " " + cliente.getNombres());
-		
+		nombre.setEditable(false);
 	}
 	
 	public Cliente getCliente() {
+		if (create_client) {
+			Cliente newCliente;
+			try {
+				newCliente = getStorableFor(Cliente.class);
+				newCliente.setCodigo(codigo.getText());
+				String fullname = nombre.getText();
+				String [] tokens = fullname.split("[ ]+");
+				//asumir el apellido es la primera palabra y nombre la segunda
+				newCliente.setApellidos(tokens[0]);
+				newCliente.setNombres(tokens[1]);
+				newCliente.setTipo("M");
+				newCliente.setJoinedDate(DateTime.now().withTime(0, 0, 0, 0));
+				if (newCliente.tryInsert()) //if inserted with success
+					cliente = newCliente; //update the new cliente;
+			}
+			catch (RepositoryException e) {
+				//only case that it throws if that getStorableFor
+				//throws
+				e.printStackTrace();
+			}
+		}
 		return cliente;
 	}
 	

@@ -36,6 +36,8 @@ public class MyRepository {
 
             MysqlDataSource source = new MysqlDataSource();
             source.setURL(URL); //"jdbc:mysql://localhost/henry"
+            System.out.println(URL);
+            
             source.setUser(user);
             source.setPassword(password);
                 

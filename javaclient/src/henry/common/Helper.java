@@ -2,6 +2,11 @@
 package henry.common;
 
 import static henry.carbonadoObjects.Usuario.getHashedPass;
+
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+
 import henry.carbonadoObjects.Cliente;
 import henry.carbonadoObjects.Contenido;
 import henry.carbonadoObjects.Factura;
@@ -21,6 +26,17 @@ import com.amazon.carbonado.Storable;
 import com.amazon.carbonado.Storage;
 
 public class Helper {
+	
+	//call this before starting application
+	//will overide the action event of space to enter
+	public static void mapEnterToActionEvent() {
+		 InputMap im = (InputMap) UIManager.getDefaults().get("Button.focusInputMap");
+	        Object pressedAction = im.get(KeyStroke.getKeyStroke("pressed SPACE"));
+	        Object releasedAction = im.get(KeyStroke.getKeyStroke("released SPACE"));
+
+	        im.put(KeyStroke.getKeyStroke("pressed ENTER"), pressedAction);
+	        im.put(KeyStroke.getKeyStroke("released ENTER"), releasedAction);
+	}
     
     public static Cliente getClienteByCode(String codigo) 
         throws RepositoryException

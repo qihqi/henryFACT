@@ -5,11 +5,15 @@ class Producto(models.Model):
     codigo = models.CharField(max_length=20, primary_key=True)
     precio = models.DecimalField(max_digits=20, decimal_places=2)
     nombre = models.CharField(max_length=200)
+    def __unicode__(self):
+        return self.nombre
     class Meta:
         db_table = 'productos'
 
 class Bodega(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
+    def __unicode__(self):
+        return self.nombre
     class Meta:
         db_table = 'bodegas'
 

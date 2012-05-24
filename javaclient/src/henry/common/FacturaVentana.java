@@ -51,7 +51,7 @@ public class FacturaVentana extends JFrame {
 		
 		contenido = new ItemContainer(user, true);
 		
-		cliente = new ClientePanel();
+		cliente = new ClientePanel(contenido);
 		
 		JButton buscarPorCliente = new JButton("Buscar por Cliente");
 		buscarPorCliente.addActionListener(new ActionListener() {
@@ -116,8 +116,9 @@ public class FacturaVentana extends JFrame {
 		aceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					save();
-					print();
+					contenido.setCliente(cliente.getCliente());
+					if (save())
+						print();
 					clear();
 				} catch (RepositoryException e1) {
 					
@@ -150,7 +151,7 @@ public class FacturaVentana extends JFrame {
 	}
 	
 	/* Guardar la nota de venta */
-	public void save() throws RepositoryException {
+	public boolean save() throws RepositoryException {
 		
 		try {
 			String pagado = pago.getText();
@@ -159,7 +160,7 @@ public class FacturaVentana extends JFrame {
 			BigDecimal cambio = pagoValor.subtract(contenido.getTotal());
 			if (cambio.compareTo(new BigDecimal(0)) < 0){
 				new SimpleDialog("Ingrese un valor \npagado mayor al total").setVisible(true);
-				return;
+				return false;
 			}
 			
 			Cliente theCliente = cliente.getCliente();
@@ -172,16 +173,17 @@ public class FacturaVentana extends JFrame {
 			numeroLabel.setText("" + numero);
 			
 			new SimpleDialog("El cambio es " + cambio).setVisible(true);
-			
+			return true;
 		}
 		catch (NumberFormatException e) {
 			new SimpleDialog("Ingrese el valor pagado").setVisible(true);
+			return false;
 		}
 		
 	}
 	/*Borrar el contenido */
 	public void clear(){
-		alert("HERE");
+
 		pago.setText("");
 		contenido.clear();
 		cliente.clear();

@@ -1,6 +1,7 @@
 package henry.common;
 
 import henry.carbonadoObjects.Usuario;
+import static henry.common.Helper.mapEnterToActionEvent;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -24,6 +25,7 @@ public class FacturaLogin extends JFrame {
 			public void run() {
 				try {
 					Config.bootstrap();
+					mapEnterToActionEvent();
 					FacturaLogin frame = new FacturaLogin();
 					frame.setVisible(true);
 				} catch (Exception e) {

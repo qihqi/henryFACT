@@ -3,9 +3,9 @@ CREATE TABLE `clientes` (
     `codigo` varchar(20) NOT NULL PRIMARY KEY,
     `nombres` varchar(100) NOT NULL,
     `apellidos` varchar(100) NOT NULL,
-    `direccion` varchar(300) NOT NULL,
-    `ciudad` varchar(50) NOT NULL,
-    `telefono` varchar(50) NOT NULL,
+    `direccion` varchar(300),
+    `ciudad` varchar(50),
+    `telefono` varchar(50),
     `tipo` varchar(1) NOT NULL,
     `cliente_desde` date NOT NULL
 )

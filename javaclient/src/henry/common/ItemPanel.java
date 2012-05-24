@@ -73,8 +73,6 @@ public class ItemPanel extends JPanel {
 	//This class gives TextField ability to select all text 
 	//when gain focus
 	class HighlightFocusListener extends FocusAdapter {
-		
-		
 		private JTextField text;
 		public HighlightFocusListener(JTextField t) {
 			text = t;

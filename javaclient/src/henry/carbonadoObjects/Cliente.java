@@ -1,5 +1,6 @@
 package henry.carbonadoObjects;
 
+import com.amazon.carbonado.Nullable;
 import com.amazon.carbonado.Storable;
 import com.amazon.carbonado.Alias;
 import com.amazon.carbonado.PrimaryKey;
@@ -19,9 +20,11 @@ public abstract class Cliente implements Storable<Cliente> {
     public abstract String getApellidos();
     public abstract void setApellidos(String s);
 
+    @Nullable
     public abstract String getDireccion();
     public abstract void setDireccion(String s);
 
+    @Nullable
     public abstract String getCiudad();
     public abstract void setCiudad(String s);
 
@@ -34,6 +37,7 @@ public abstract class Cliente implements Storable<Cliente> {
     public abstract void setJoinedDate(DateTime s);
     
     @Alias("telefono")
+    @Nullable
     public abstract String getTelefono();
     public abstract void setTelefono(String s);
 

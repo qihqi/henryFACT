@@ -173,12 +173,20 @@ public class ItemContainer extends JPanel {
 		//move the cursor to next one
 		//update the total
 		updateSubtotal();
-		if (current < items.size() - 1) {
+		getFocus();
+	}
+	
+	public void getFocus() {
+		int threshold = items.size() - 1;
+		if (current < threshold) {
 		//dont need to make new one
 			System.out.println("didnt add new");
 			ItemPanel next = items.get(++current);
 			next.focus();
 		} 
+		else if (current == threshold && items.get(threshold).getProd() == null) {
+			items.get(threshold).focus();
+		}
 		else {
 			//allocate new ones
 			ItemPanel newOne = new ItemPanel(this);
@@ -191,7 +199,7 @@ public class ItemContainer extends JPanel {
 			
 		}
 	}
-		
+	
 	public void updateSubtotal() {
 		BigDecimal currentTotal = new BigDecimal(0);
 		for (ItemPanel item : items) {	
@@ -308,7 +316,6 @@ public class ItemContainer extends JPanel {
 			}
 			txn.commit();
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			txn.exit();
@@ -374,5 +381,6 @@ public class ItemContainer extends JPanel {
 		}
 				
 	}
+	
 	
 }

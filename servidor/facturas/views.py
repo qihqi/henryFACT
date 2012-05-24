@@ -56,20 +56,23 @@ def generar_resumen_page(request):
     desde = form.cleaned_data['desde']
     hasta = form.cleaned_data['hasta']
     vendido = form.cleaned_data['vendido_por']
-
-    resumen = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta), vendedor=UserJava(username=vendido))
+    bodega_id = int(form.cleaned_data['bodega'])
+    bodega_name = Bodega.objects.get(id=bodega_id)
+    resumen = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta),
+                                             vendedor=UserJava(username=vendido),
+                                             bodega=Bodega(bodega_id))
 
     cheques = list(resumen.filter(pago=OrdenDeDespacho.PAGO_CHEQUE))
     efectivos = list(resumen.filter(pago=OrdenDeDespacho.PAGO_EFECTIVO))
     targetas = list(resumen.filter(pago=OrdenDeDespacho.PAGO_TARGETA))
 
     cheque_total = sum([c.total for c in cheques])
-    print [c.total for c in efectivos]
     efectivo_total = sum([c.total for c in efectivos])
     targeta_total = sum([c.total for c in targetas])
 
     return render_to_response('resumen.html',
                              {'cheques' : cheques,
+                              'bodega' : bodega_name,
                               'efectivos' : efectivos,
                               'targetas' : targetas,
                               'ctotal' : cheque_total,

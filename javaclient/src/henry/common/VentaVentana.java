@@ -35,7 +35,7 @@ public class VentaVentana extends JFrame {
 		
 		contenido = new ItemContainer(user, false);
 		
-		cliente = new ClientePanel();
+		cliente = new ClientePanel(contenido);
 		panel.add(cliente, "wrap, span");
 		panel.add(contenido, "wrap, span");
 		JButton aceptar = new JButton("aceptar");

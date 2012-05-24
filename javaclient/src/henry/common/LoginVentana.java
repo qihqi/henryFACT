@@ -1,5 +1,6 @@
 package henry.common;
 
+import static henry.common.Helper.mapEnterToActionEvent;
 import henry.carbonadoObjects.Usuario;
 
 import java.awt.EventQueue;
@@ -29,6 +30,7 @@ public class LoginVentana extends JFrame {
 			public void run() {
 				try {
 					Config.bootstrap();
+					mapEnterToActionEvent();
 					LoginVentana frame = new LoginVentana();
 					frame.setVisible(true);
 				} catch (Exception e) {

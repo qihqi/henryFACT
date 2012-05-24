@@ -1,18 +1,18 @@
-<tr><td colspan=3 style="{align : 'center';}"> {{name}} </td>
+<tr><td colspan=3 style="{align : 'center';}"> {{nombre}} </td>
     {% if not cheques %}
         <tr><td colspan=3 style="{align : 'center';}"> NO HAY </td> 
     {%endif%}
 
     {% for x in ordenes %}
         <tr>
-            <td> {{x.codigo}} </td>
-            <td> {{x.cliente.fullname}} </td>
-            <td> {{x.total}} </td>
+            <td width=100 > {{x.codigo}} </td>
+            <td style="text-align:center;"> {{x.cliente.fullname}} </td>
+            <td style="text-align:right;" width=100> {{x.total}} </td>
         </tr>
     {%endfor %}
-        <!--total de cheque -->
+        <!--total -->
         <tr>
             <td>  </td>
             <td>  </td>
-            <td> {{total}} </td>
+            <td style="text-align:right;"> {{total}} </td>
         </tr>
