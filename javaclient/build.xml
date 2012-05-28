@@ -34,15 +34,61 @@
             </classpath-->
     </target>
 
+<pathconvert property="windows.classpath" pathsep=" ">
+  <path refid="classpath"/>
+  <mapper>
+    <chainedmapper>
+       <flattenmapper/>
+       <globmapper from="*.jar" to="lib\*.jar;"/>
+    </chainedmapper>
+  </mapper>
+</pathconvert>
+<pathconvert property="manifest.classpath" pathsep=" ">
+  <path refid="classpath"/>
+  <mapper>
+    <chainedmapper>
+       <flattenmapper/>
+       <globmapper from="*.jar" to="lib/*.jar"/>
+    </chainedmapper>
+  </mapper>
+</pathconvert>
     <target name="dist" depends="compile"
         description="generate the distribution" >
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}/lib"/>
 
         <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-        <jar jarfile="${dist}/lib/henry.jar" basedir="${build}">
+        <jar jarfile="${dist}/lib/venta.jar" basedir="${build}">
             <manifest>
-                <attribute name="Main-Class" value="henry.test"/>
+                <attribute name="Main-Class" value="henry.common.LoginVentana"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>
+        <!-- make the factura executable -->
+        <jar jarfile="${dist}/lib/factura.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="henry.common.FacturaLogin"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="dist-windows" depends="compile"
+        description="generate the distribution" >
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}/lib"/>
+
+        <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/lib/ventaw.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="henry.common.LoginVentana"/>
+                <attribute name="Class-Path" value="${windows.classpath}"/>
+            </manifest>
+        </jar>
+        <jar jarfile="${dist}/lib/facturaw.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="henry.common.FacturaLogin"/>
+                <attribute name="Class-Path" value="${windows.classpath}"/>
             </manifest>
         </jar>
     </target>
