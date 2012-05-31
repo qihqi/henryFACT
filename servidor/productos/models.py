@@ -1,9 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+#(prod, unit, bodega -> precio, cantidad)
+
+class Unidad(models.Model):
+    pass
 
 class Producto(models.Model):
-    codigo = models.CharField(max_length=20, primary_key=True)
-    precio = models.DecimalField(max_digits=20, decimal_places=2)
+    codigo_barra = models.AutoField(primary_key=True) # for later use
+    codigo = models.CharField(max_length=20, unique=True)
     nombre = models.CharField(max_length=200)
     def __unicode__(self):
         return self.nombre
@@ -21,6 +25,8 @@ class Contenido(models.Model):
     bodega = models.ForeignKey(Bodega)
     prod = models.ForeignKey(Producto)
     cant = models.IntegerField()
+    precio = models.DecimalField(max_digits=20, decimal_places=2)
+    precio2 = models.DecimalField(max_digits=20, decimal_places=2)
     class Meta:
         db_table = 'contenido_de_bodegas'
         unique_together = ('bodega', 'prod')

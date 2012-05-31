@@ -145,12 +145,9 @@ def ingreso_producto_page(request):
 
 @my_login_required
 def ver_producto_page(request):
-    pass
 
+    return render_to_response('inventario.html', {'ordenes' : Producto.objects.all()});
 
-@my_login_required
-def ver_producto_page(request):
-    pass
 #---------------------------------------------------------------------------
 #Supporting ajax, return JSON
 @my_login_required
