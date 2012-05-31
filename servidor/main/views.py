@@ -1,5 +1,6 @@
 # Create your views here.
 from main.models import *
+from main.helper import *
 from main.forms import *
 
 from django.db import IntegrityError, transaction
@@ -79,6 +80,78 @@ def createUserPage(request):
                                        'duplicado': False,
                                        'creado' : None},
                                       context_instance=RequestContext(request))
+
+def get_param_table(additional, params, template):
+    template = loader.get_template(template)
+    cont = Context({'config' : params})
+    return additional + template.render(cont)
+
+@my_login_required
+def config_page(request):
+    form = ConfigForm()
+    meta = {'form' : form,
+            'method' : 'post',
+            'action' : reverse('main.views.config_page'),
+            'st_message' : '',
+            'submit_name' : 'Guardar',
+            'title' : 'Parametros'}
+    if request.method == 'GET':
+
+        meta['st_message'] = get_param_table('', Descuento.objects.all(), 'view_config.html')
+
+        return render_form(meta, RequestContext(request))
+    #POST
+    form = ConfigForm(request.POST)
+    if not form.is_valid():
+        meta['form'] = form
+        return render_form(meta, RequestContext(request))
+
+    #ahora el chiste es valido
+    valor = form.cleaned_data['valor']
+    param = form.cleaned_data['parametro']
+
+    desc = Descuento.objects.get(pk=param)
+    desc.value = valor
+    desc.save()
+
+    meta['st_message'] = get_param_table('Parametro <b> %s </b> guardado' % param, Descuento.objects.all(), 'view_config.html')
+    meta['form'] = ConfigForm()
+    return render_form(meta, RequestContext(request))
+
+
+@my_login_required
+def modificar_sequencia_page(request):
+    if getUserJava(request.user.username).nivel < 2:
+        return HttpResponseRedirect('/login?next='
+                     + reverse('main.views.modificar_sequencia_page'))
+
+
+    meta = {'form' : SeqForm(),
+            'method' : 'post',
+            'action' : reverse('main.views.modificar_sequencia_page'),
+            'st_message' : '',
+            'submit_name' : 'Guardar',
+            'title' : 'Modificar Seguencia'}
+    if request.method == 'GET':
+        meta['st_message'] = get_param_table('', UserJava.objects.all(), 'view_seq.html')
+        return render_form(meta, RequestContext(request))
+
+    form = SeqForm(request.POST)
+    if not form.is_valid():
+        return render_form(meta, RequestContext(request))
+
+    seq = form.cleaned_data['seguencia']
+    username = form.cleaned_data['usuario']
+
+    usuario = getUserJava(username)
+    usuario.last_factura = seq
+    usuario.save()
+
+    msg = 'sequencia para <b> %s </b> cambiado a <b> %d </b>' % (username, seq)
+    meta['st_message'] = get_param_table(msg, UserJava.objects.all(), 'view_seq.html')
+    meta['form'] = SeqForm()
+    return render_form(meta, RequestContext(request))
+
 def test(request):
     #print zip(request.GET.get('codigo',''), request.GET.get('cant'.''))
     return render_to_response('test.html')
