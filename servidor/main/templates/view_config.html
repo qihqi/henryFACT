@@ -1,0 +1,9 @@
+
+<table width="500" border="1px">
+    {% for v in config%}
+    <tr>
+        <td width="300"> {{v.param}} </td>
+        <td width="200"> {{v.value}} </td>
+    </tr>
+    {% endfor %}
+</table>
