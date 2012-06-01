@@ -21,9 +21,14 @@
     {% if method == "post" %}
         {% csrf_token %}
     {%endif%}
-{{form.as_p }}
-<input type="submit" value="{{submit_name}}" />
-<input type="button" value="Cancelar" />
+<table>
+    {{form.as_table }}
+    <tr>
+        <td></td>
+        <td><input type="submit" value="{{submit_name}}" />
+        <input type="button" value="Cancelar" /> </td>
+    </tr>
+</table>
 </form>
 
 {% endblock %}

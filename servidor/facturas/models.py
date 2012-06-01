@@ -29,13 +29,15 @@ class ItemDeVenta(models.Model):
 class OrdenDeDespacho(models.Model):
 #esto es factura en menorista
     codigo = models.BigIntegerField(primary_key=True)
-    vendedor = models.ForeignKey(UserJava)
-    cliente = models.ForeignKey(Cliente)
-    fecha = models.DateField(auto_now_add=True)
+    vendedor = models.ForeignKey(UserJava, db_index=True)
+    cliente = models.ForeignKey(Cliente, db_index=True)
+    fecha = models.DateField(auto_now_add=True, db_index=True)
     total = models.DecimalField(max_digits=20, decimal_places=2)
-    bodega = models.ForeignKey(Bodega)
-    pago = models.CharField(max_length=1) #forma de pago
+    desc = models.DecimalField(max_digits=20, decimal_places=2, null=True)
+    bodega = models.ForeignKey(Bodega, db_index=True)
+    pago = models.CharField(max_length=1, db_index=True) #forma de pago
     precio_modificado = models.BooleanField()
+    eliminado = models.BooleanField()
     #tipos de pago
     PAGO_EFECTIVO = 'E'
     PAGO_CHEQUE = 'C'

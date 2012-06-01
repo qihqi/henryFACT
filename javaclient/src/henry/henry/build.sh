@@ -1,0 +1,1 @@
+javac -classpath ../../dist/lib/henry.jar:../../lib/joda-time-2../../lib/joda-time-2.1.jar:../../lib/carbonado-1.2.3.jar:../../lib/cojen-2.2.3.jar:../../lib/commons-logging-1.1../../lib/commons-logging-1.1.1-bin.jar:../../lib/mysql-connector-java-5.1.18-bin.jar:../../lib/swt.jar $1

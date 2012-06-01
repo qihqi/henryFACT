@@ -57,25 +57,53 @@ def create_product_page(request):
             'title' : 'Crear Producto',
            }
     if request.method == 'GET':
+        transaction.rollback()
         return render_form(meta, RequestContext(request))
 
     #handles post
     form = CreateProductForm(request.POST)
     if not form.is_valid():
         meta['form'] = form
+        transaction.rollback()
         return render_form(meta, RequestContext(request))
 
     #Now the form is valid
 
     #enter transaction
+    #Crear producto
     data = form.cleaned_data
-    producto = Producto(nombre=data['nombre'],
-                        codigo=data['codigo'],
-                        precio=data['precio'])
+    codigo = form.cleaned_data['codigo']
+    nombre = form.cleaned_data['nombre']
+    print data
+    prod = Producto(nombre=nombre, codigo=codigo)
+    try:
+        prod.save()
+    except IntegrityError:
+        prod = Producto.objects.get(codigo=codigo)
+        if nombre != '' and prod.nombre != nombre:
+            meta['st_message'] = 'El codigo <b> %s </b> ya esta usado \
+                                  para el producto <b> %s </b>; <br /> \
+                                  Utilice otro codigo o deje el nombre libre.' % (codigo, prod.nombre)
+            transaction.rollback()
+            return render_form(meta, RequestContext(request))
 
-    producto.save()
+    print data
 
-    meta['st_message'] = 'Producto <b> %s </b> es creado con exito' % producto.nombre
+    #Crear transaction
+    try:
+        cont = Contenido(prod=prod,
+                         precio=data['precio_menorista'],
+                         precio2=data['precio_mayorista'],
+                         bodega=Bodega(data['bodega']),
+                         cant=data['cantidad'])
+        cont.save()
+    except IntegrityError:
+        meta['st_message'] = 'Este producto ya existe en esta bodega'
+        transaction.rollback()
+        return render_form(meta, RequestContext(request))
+
+    meta['st_message'] = 'Producto <b> %s </b> es creado con exito' % prod.nombre
+    transaction.commit()
     return render_form(meta, RequestContext(request))
 
 def validate_ingreso(post):

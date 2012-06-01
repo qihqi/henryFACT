@@ -1,6 +1,7 @@
 
 <html>
     <head>
+        <title>Resumen</title>
         <style>
             body {
                 text-align : center;
@@ -9,15 +10,19 @@
     </head>
     <body align="center">
         <h2>{{bodega}}</h2>
-        <table width=700>
+        <table width=700 align="center">
             <tr>
-                <th> Codigo </th>
-                <th> Cliente </th>
-                <th> Valor </th>
+                <th width=100 style="text-align:left;"> Codigo </th>
+                <th style="text-align:center;"> Cliente </th>
+                <th width=100 style="text-align:right;"> Valor </th>
             </tr>
-            {% include "snippets/mostrar_venta.html" with nombre="CHEQUE" ordenes=cheques total=ctotal  %}
-            {% include "snippets/mostrar_venta.html" with nombre="EFECTIVO" ordenes=efectivos total=etotal  %}
-            {% include "snippets/mostrar_venta.html" with nombre="TARJETA" ordenes=targetas total=ttotal  %}
         </table>
+
+        <hr />
+        {% include "snippets/mostrar_venta.html" with nombre="CHEQUE" ordenes=cheques total=ctotal  %}
+        <hr />
+        {% include "snippets/mostrar_venta.html" with nombre="EFECTIVO" ordenes=efectivos total=etotal  %}
+        <hr />
+        {% include "snippets/mostrar_venta.html" with nombre="TARJETA" ordenes=targetas total=ttotal  %}
     </body>
 </html>

@@ -6,8 +6,8 @@ class Unidad(models.Model):
     pass
 
 class Producto(models.Model):
-    codigo_barra = models.AutoField(primary_key=True) # for later use
-    codigo = models.CharField(max_length=20, unique=True)
+    codigo_barra = models.IntegerField(null=True) # for later use
+    codigo = models.CharField(max_length=20, primary_key=True)
     nombre = models.CharField(max_length=200)
     def __unicode__(self):
         return self.nombre

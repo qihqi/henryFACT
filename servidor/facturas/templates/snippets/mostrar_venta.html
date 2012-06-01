@@ -1,6 +1,8 @@
-<tr><td colspan=3 style="{align : 'center';}"> {{nombre}} </td>
-    {% if not cheques %}
-        <tr><td colspan=3 style="{align : 'center';}"> NO HAY </td> 
+<table width=700 align="center">
+    <tr><td colspan=3 style="{text-align:center;font-family:'Arial'}"><b>{{nombre}}</b></td>
+
+    {% if not ordenes %}
+        <tr><td colspan=3 style="{text-align:center;}"> NO HAY </td> 
     {%endif%}
 
     {% for x in ordenes %}
@@ -13,6 +15,7 @@
         <!--total -->
         <tr>
             <td>  </td>
-            <td>  </td>
-            <td style="text-align:right;"> {{total}} </td>
+            <td style="text-align:right;"><b>Total:</b> </td>
+            <td style="text-align:right;"><b> {{total}}</b> </td>
         </tr>
+</table>
