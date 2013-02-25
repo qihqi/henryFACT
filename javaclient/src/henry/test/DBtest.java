@@ -1,4 +1,4 @@
-package henry.test;
+/*package henry.test;
 
 import static org.junit.Assert.*;
 
@@ -84,4 +84,4 @@ public class DBtest {
 	}
 	
 
-}
+}              */

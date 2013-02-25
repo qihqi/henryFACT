@@ -27,6 +27,6 @@ pip-log.txt
 .mr.developer.cfg
 
 #java client libraries
-javaclient/lib/
+javaclient/dist/
 javaclient/build/
 
