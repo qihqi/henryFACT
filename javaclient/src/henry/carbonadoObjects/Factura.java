@@ -1,9 +1,14 @@
 package henry.carbonadoObjects;
 
 import java.math.BigDecimal;
+
+import com.amazon.carbonado.Automatic;
 import com.amazon.carbonado.Storable;
 import com.amazon.carbonado.Alias;
 import com.amazon.carbonado.PrimaryKey;
+import com.amazon.carbonado.Key;
+import com.amazon.carbonado.AlternateKeys;
+
 import com.amazon.carbonado.Join;
 import com.amazon.carbonado.Query;
 import com.amazon.carbonado.FetchException;
@@ -16,7 +21,8 @@ import henry.carbonadoObjects.ItemFactura;
 import org.joda.time.DateTime;
 
 @Alias("ordenes_de_despacho")
-@PrimaryKey("codigo")
+@PrimaryKey("id")
+@AlternateKeys(@Key({"bodegaId", "codigo"}))
 public abstract class Factura implements Storable<Factura> {
 	
 	/*formas de pagos*/
@@ -24,7 +30,14 @@ public abstract class Factura implements Storable<Factura> {
 	public static final String TARGETA_CREDITO = "T";
 	public static final String CHEQUE = "C";
 	public static final String DEPOSITO = "D";
+	public static final String VARIOS = "V";
+
 	//END forma de pago
+	public static final String CREDITO = "R";
+
+	@Automatic
+	public abstract long getId();
+	public abstract void setId(long s);
 	
     public abstract BigDecimal getTotal();
     public abstract void setTotal(BigDecimal x);
@@ -63,7 +76,7 @@ public abstract class Factura implements Storable<Factura> {
     public abstract Usuario getVendedor() throws FetchException;
     public abstract void setVendedor(Usuario s);
 
-    @Join(internal="codigo",
+    @Join(internal="id",
           external="codigoFactura")
     public abstract Query<ItemFactura> getItems() throws FetchException;
    
@@ -76,5 +89,9 @@ public abstract class Factura implements Storable<Factura> {
     @Alias("precio_modificado")
     public abstract boolean isModificado();
     public abstract void setModificado(boolean x);
+    
+    
+    public abstract boolean isEliminado();
+    public abstract void setEliminado(boolean x);
 
 }

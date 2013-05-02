@@ -1,15 +1,20 @@
 package henry.common;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
 import henry.carbonadoObjects.Cliente;
 import henry.carbonadoObjects.Factura;
 import henry.carbonadoObjects.NotaDeVenta;
 import henry.carbonadoObjects.Usuario;
+import henry.printer.GenericPrinter;
 import static henry.common.Helper.*;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
@@ -22,8 +27,9 @@ import com.amazon.carbonado.RepositoryException;
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
-public class FacturaVentana extends JFrame {
+public class FacturaVentana extends JFrame implements Ventana{
 
+	
 	private JPanel panel;
 	
 	private ItemContainer contenido;
@@ -33,8 +39,16 @@ public class FacturaVentana extends JFrame {
 	private JTextField pedidoField;
 	
 	private long numero;
-	private static final String FORMA_DE_PAGO = Factura.EFECTIVO;
-
+	private static final String []
+			PAGO_LABEL = {"efectivo", "tarjeta", "cheque", "deposito", "credito", "varios"};
+	private static final String [] 
+			FORMAS_DE_PAGO = {Factura.EFECTIVO,
+		                      Factura.TARGETA_CREDITO,
+		                      Factura.CHEQUE,
+		                      Factura.DEPOSITO,
+		                      Factura.CREDITO,
+		                      Factura.VARIOS};
+	private String formaPago = Factura.EFECTIVO;
 	/**
 	 * Create the application.
 	 */
@@ -115,25 +129,36 @@ public class FacturaVentana extends JFrame {
 		JButton aceptar = new JButton("aceptar");
 		aceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					contenido.setCliente(cliente.getCliente());
-					if (save())
-						print();
-					clear();
-				} catch (RepositoryException e1) {
-					
-					e1.printStackTrace();
-				}
+				aceptar();
 			}
 		});
 		JButton cancelar = new JButton("cancelar");
 		cancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clear();
-				
 			}
 		});
 		
+		
+		//Formas de Pago
+		ButtonGroup group = new ButtonGroup();
+		JPanel buttons = new JPanel();
+		buttons.setLayout(new MigLayout());
+		for (int i = 0; i < FORMAS_DE_PAGO.length; i++) {
+			JRadioButton rad = new JRadioButton(PAGO_LABEL[i]);
+			if (i == 0) 
+				rad.setSelected(true);
+			final int index = i;
+			rad.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					formaPago = FORMAS_DE_PAGO[index];
+				}
+			});
+			
+			buttons.add(rad);
+			group.add(rad);
+		}
 		
 		JLabel label = new JLabel("A Pagar");
 		pago = new JTextField();
@@ -141,47 +166,61 @@ public class FacturaVentana extends JFrame {
 		panel.add(label, "width :100:");
 		panel.add(pago, "width :300:");
 		panel.add(aceptar, "width :100:");
-		panel.add(cancelar, "width :100:");
+		panel.add(cancelar, "width :100:, wrap");
+		panel.add(buttons, "span, wrap");
+	
+		JLabel hotkeys = new JLabel("F5=Buscar Cliente  F6=Buscar Producto " +
+				"F7=Pagar  F8=Aceptar  F9=Cancelar");
+		panel.add(hotkeys, "span");
 		
-		
-		
-		
+		setTitle("Orden de Despacho");
+		panel.setBackground(Color.RED);
 		setBounds(100, 100, 735, 655);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	/* Guardar la nota de venta */
+	
 	public boolean save() throws RepositoryException {
 		
-		try {
-			String pagado = pago.getText();
-			BigDecimal pagoValor = new BigDecimal(pagado);
-			
-			BigDecimal cambio = pagoValor.subtract(contenido.getTotal());
-			if (cambio.compareTo(new BigDecimal(0)) < 0){
-				new SimpleDialog("Ingrese un valor \npagado mayor al total").setVisible(true);
+		
+		BigDecimal cambio = null;
+		if (formaPago == Factura.EFECTIVO) {
+			try{
+				String pagado = pago.getText();
+				BigDecimal pagoValor = new BigDecimal(pagado);
+				
+				cambio = pagoValor.subtract(contenido.getTotal());
+				if (cambio.compareTo(new BigDecimal(0)) < 0){
+					new SimpleDialog("Ingrese un valor \npagado mayor al total").setVisible(true);
+					return false;
+				}
+				alertnb("El cambio es " + cambio);
+			}
+			catch (NumberFormatException e) {
+				new SimpleDialog("Ingrese el valor pagado").setVisible(true);
 				return false;
 			}
-			
-			Cliente theCliente = cliente.getCliente();
-			contenido.setCliente(theCliente);
-			contenido.saveFact(FORMA_DE_PAGO);
-			
-			
-			//pop up con el cambio
-			numero++;
-			numeroLabel.setText("" + numero);
-			
-			new SimpleDialog("El cambio es " + cambio).setVisible(true);
-			return true;
 		}
-		catch (NumberFormatException e) {
-			new SimpleDialog("Ingrese el valor pagado").setVisible(true);
+		Cliente theCliente = cliente.getCliente();
+		
+		if (theCliente == null) {
+			alert("Ingrese Cliente");
 			return false;
 		}
 		
+		contenido.setCliente(theCliente);
+		if (contenido.saveFact(formaPago) != 0)
+			return false;
+		
+		numero++;
+		numeroLabel.setText("" + numero);
+		
+		return true;
+		
 	}
 	/*Borrar el contenido */
+	@Override
 	public void clear(){
 
 		pago.setText("");
@@ -191,10 +230,40 @@ public class FacturaVentana extends JFrame {
 	}
 
 	public void print() {
-		FacturaPrinter printer = new FacturaPrinter(contenido.getItems(),
+		GenericPrinter printer = GenericPrinter.makePrinter(contenido.getItems(),
 													contenido.getSubtotal(),
 				                                    contenido.getTotal(),
-				                                    cliente.getCliente());
+				                                    contenido.getDescuento(),
+				                                    cliente.getCliente(),
+				                                    (numero - 1));
 		printer.printFactura();
+	}
+
+	@Override
+	public ItemContainer getItemContainer() {
+		return  contenido;
+	}
+
+	@Override
+	public ClientePanel getClientePanel() {
+		return cliente;
+	}
+	
+	@Override
+	public void aceptar() {
+		try {
+			if (save()){
+				print();
+				clear();
+			}
+		} catch (RepositoryException e1) {
+			alert("factura no fue guardada");
+			e1.printStackTrace();
+		}
+	}
+
+	@Override
+	public void pagar() {
+		pago.requestFocusInWindow();
 	}
 }

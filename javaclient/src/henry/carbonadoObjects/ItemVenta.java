@@ -38,8 +38,8 @@ public abstract class ItemVenta implements Storable<ItemVenta> {
     public abstract String getCodigoProd();
     public abstract void setCodigoProd(String s);
 
-    public abstract int getCantidad();
-    public abstract void setCantidad(int s);
+    public abstract BigDecimal getCantidad();
+    public abstract void setCantidad(BigDecimal s);
 
     @Join(internal="codigoVenta",
           external="codigo")
@@ -56,5 +56,12 @@ public abstract class ItemVenta implements Storable<ItemVenta> {
     @Alias("nuevo_precio")
     public abstract BigDecimal getNuevoPrecio();
     public abstract void setNuevoPrecio(BigDecimal s);
-    
+	private Contenido contenido= null;
+    public void setCont(Contenido cont) {
+		contenido = cont;
+		
+	}
+    public Contenido getCont() {
+    	return contenido;
+    }
 }

@@ -1,10 +1,15 @@
 package henry.carbonadoObjects;
 
+import java.math.BigDecimal;
+
 import com.amazon.carbonado.Alias;
 import com.amazon.carbonado.AlternateKeys;
 import com.amazon.carbonado.Automatic;
 import com.amazon.carbonado.FetchException;
+import com.amazon.carbonado.Indexes;
+import com.amazon.carbonado.Index;
 import com.amazon.carbonado.Join;
+import com.amazon.carbonado.Nullable;
 import com.amazon.carbonado.PrimaryKey;
 import com.amazon.carbonado.Key;
 
@@ -14,6 +19,7 @@ import com.amazon.carbonado.Storable;
 @Alias("contenido_de_bodegas")
 @PrimaryKey("id")
 @AlternateKeys(@Key({"bodegaId", "prodId"}))
+@Indexes(@Index({"prodId"}))
 public abstract class Contenido implements Storable<Contenido>{
 	
     @Alias("id")
@@ -30,8 +36,8 @@ public abstract class Contenido implements Storable<Contenido>{
     public abstract void setProdId(String s);
     
     @Alias("cant")
-    public abstract int getCantidad();
-    public abstract void setCantidad(int s);
+    public abstract BigDecimal getCantidad();
+    public abstract void setCantidad(BigDecimal s);
     
     @Join(internal="prodId",
           external="codigo")
@@ -42,4 +48,40 @@ public abstract class Contenido implements Storable<Contenido>{
           external="id")
     public abstract Bodega getBodega() throws FetchException;
     public abstract void setBodega(Bodega p);
+    
+    @Alias("precio")
+    public abstract BigDecimal getPrecio();
+    public abstract void setPrecio(BigDecimal s);
+
+    @Alias("precio2")
+    public abstract BigDecimal getPrecio2();
+    public abstract void setPrecio2(BigDecimal s);
+
+    @Alias("cant_mayorista")
+    @Nullable
+    public abstract Integer getCantMayor();
+    public abstract void setCantMayor(Integer s);
+    
+    public BigDecimal getDescuento() {
+		return getPrecio().subtract(getPrecio2());
+	}
+    
+    private String nombre_prod = null;
+    
+    public String getNombreProd() {
+    	if (nombre_prod == null) {
+    		try {
+				nombre_prod = getProducto().getNombre();
+			} catch (FetchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	return nombre_prod;
+    }
+    
+    public void setNombreProd(String s) {
+    	nombre_prod = s;
+    }
+    
 }

@@ -32,6 +32,19 @@ public abstract class Usuario implements Storable<Usuario> {
     public abstract long getLastFactura();
     public abstract void setLastFactura(long s);
     
+    @Alias("bodega_factura_id")
+    public abstract int getFacturaPor();
+    public abstract void setFacturaPor(int s);
+    
+    //return true if this usuario is authorized to 
+    //make factura for bodega bodegaId
+    public boolean authorizedFor(int bodegaId) {
+    	int auth = getFacturaPor();
+    	if (auth == -1)
+    		return false;
+    	return auth == bodegaId;
+    }
+    
     public static String getHashedPass(String s) {
     	byte [] ch = s.getBytes();
     	try {

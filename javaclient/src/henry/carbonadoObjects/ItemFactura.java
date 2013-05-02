@@ -28,7 +28,7 @@ public abstract class ItemFactura implements Storable<ItemFactura> {
     public abstract void setCodigoFactura(long s);
 
     @Join(internal="codigoFactura",
-          external="codigo")
+          external="id")
     public abstract Factura getFactura() throws FetchException;
     public abstract void setFactura(Factura s);
    
@@ -46,8 +46,8 @@ public abstract class ItemFactura implements Storable<ItemFactura> {
     public abstract Producto getProducto() throws FetchException;
     public abstract void setProducto(Producto s);
 
-    public abstract int getCantidad();
-    public abstract void setCantidad(int s);
+    public abstract BigDecimal getCantidad();
+    public abstract void setCantidad(BigDecimal s);
 
     public abstract BigDecimal getPrecio();
     public abstract void setPrecio(BigDecimal s);

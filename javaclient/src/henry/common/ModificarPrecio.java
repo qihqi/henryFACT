@@ -39,7 +39,7 @@ public class ModificarPrecio extends JDialog {
 	 * @param usuario 
 	 */
 	public ModificarPrecio(Usuario usuario) {
-		super(null, Dialog.ModalityType.DOCUMENT_MODAL);
+		super(null, Dialog.ModalityType.APPLICATION_MODAL);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		if (usuario.getNivel() < 2) {
 			SimpleDialog dia = new SimpleDialog("No tiene privilegios suficientes");

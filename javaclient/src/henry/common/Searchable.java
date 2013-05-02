@@ -10,16 +10,12 @@ import com.amazon.carbonado.RepositoryException;
 import com.amazon.carbonado.Storage;
 
 import henry.carbonadoObjects.MyRepository;
+import henry.carbonadoObjects.Producto;
 
 public class Searchable {
 	
 	public static final String CLIENTE = "apellidos >= ? & apellidos < ?";
 	public static final String PRODUCTO = "nombre >= ? & nombre < ?";
-	
-	private String queryString;
-	public Searchable(String qs) {
-		queryString = qs;
-	}
 	
 	public <C extends Storable<C>> ArrayList<C> search(String arg, Class<C> dummy) {
 		try {
@@ -27,8 +23,14 @@ public class Searchable {
                                                .storageFor(dummy);
 			
 			
+			
 			String next = nextString(arg);
-			Query<C> result = clientStg.query(queryString).with(arg).with(next);
+			Query<C> result;
+			if (dummy.equals(Producto.class))
+				result = clientStg.query(PRODUCTO).with(arg).with(next).orderBy("+nombre");
+			else 
+				result = clientStg.query(CLIENTE).with(arg).with(next).orderBy("+apellidos");
+				
 			
 			ArrayList<C> list = new ArrayList<C>();
 			for (Cursor<C> cur = result.fetch();

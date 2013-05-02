@@ -37,7 +37,8 @@ public class SimpleDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public SimpleDialog(String s) {
-		super(null, Dialog.ModalityType.DOCUMENT_MODAL);
+		super(null, Dialog.ModalityType.APPLICATION_MODAL);
+		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 333, 225);
 		getContentPane().setLayout(new BorderLayout());

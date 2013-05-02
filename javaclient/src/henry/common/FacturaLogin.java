@@ -1,9 +1,14 @@
 package henry.common;
 
+import henry.carbonadoObjects.MyRepository;
 import henry.carbonadoObjects.Usuario;
-import static henry.common.Helper.mapEnterToActionEvent;
+import static henry.common.Helper.*;
 
 import java.awt.EventQueue;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
@@ -26,8 +31,10 @@ public class FacturaLogin extends JFrame {
 				try {
 					Config.bootstrap();
 					mapEnterToActionEvent();
+					registerHotkeys();
 					FacturaLogin frame = new FacturaLogin();
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -43,8 +50,21 @@ public class FacturaLogin extends JFrame {
 		setBounds(100, 100, 393, 172);
 		contentPane = new LoginPane(new Runnable () {
 			public void run() {
+				int bodega = Integer.parseInt(Config.getConfig().getBodega());
+				if (!getUsuario().authorizedFor(bodega)) {
+					contentPane.setMessage("Usuario no autorizado");
+					return;
+				}
 				FacturaVentana ventana = new FacturaVentana(getUsuario());
+				ventana.addWindowListener(new WindowAdapter() {
+					@Override 
+					public void windowClosing(WindowEvent e) {
+						MyRepository.close();
+					} 
+				});
 				ventana.setVisible(true);
+				KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				  .addKeyEventDispatcher(new HotKeyEventDispatcher(ventana) );
 				setVisible(false);
 				dispose();
 			}

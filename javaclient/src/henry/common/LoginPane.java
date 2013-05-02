@@ -93,4 +93,8 @@ public class LoginPane extends JPanel implements ActionListener{
 		System.err.println(usuario);
 		return usuario;
 	}
+	
+	public void setMessage(String s) {
+		message.setText(s);
+	}
 }

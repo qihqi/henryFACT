@@ -33,7 +33,7 @@ public class ModificarPrecioDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public ModificarPrecioDialog() {
-		super(null, Dialog.ModalityType.DOCUMENT_MODAL);
+		super(null, Dialog.ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 350, 128);
 		getContentPane().setLayout(new BorderLayout());
 		

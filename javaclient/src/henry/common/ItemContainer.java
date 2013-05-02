@@ -10,9 +10,12 @@ import static henry.common.Helper.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextField;
@@ -27,9 +31,7 @@ import javax.swing.JTextField;
 import org.joda.time.DateTime;
 
 import com.amazon.carbonado.ConfigurationException;
-import com.amazon.carbonado.Cursor;
 import com.amazon.carbonado.PersistException;
-import com.amazon.carbonado.Query;
 import com.amazon.carbonado.RepositoryException;
 import com.amazon.carbonado.Transaction;
 
@@ -43,6 +45,8 @@ public class ItemContainer extends JPanel {
 	
 	private static final int DEFAULT_IVA = 12; 
 	
+	private static final int VIEWABLE_ROW_COUNT = 6;
+	
 	private int current; // the current selected item
 	private ArrayList<ItemPanel> items;
 	private Map<ItemPanel, Integer> reverseItem; 
@@ -54,19 +58,23 @@ public class ItemContainer extends JPanel {
 	private JLabel lNombre;
 	private JLabel lPre;
 	private JLabel lSub;
+	private JScrollPane scroll;
 	
 	private JTextField ivaPorciento;
 	private JTextField ivaValor;
 	private JTextField totalValor;
-	
+	private JTextField descValor;
 	
 	private BigDecimal total;
 	private BigDecimal subtotal;
-	
+	private BigDecimal descuento;
+
+	private JTextField subValor;
 	private JTextField subtotalValor;
 	
 	Cliente cliente;
 	Usuario usuario;
+
 	
 //-------------------------------------------------------------------------------	
 	public ItemContainer(Usuario u, boolean fact) {
@@ -75,6 +83,7 @@ public class ItemContainer extends JPanel {
 		
 		items = new ArrayList<ItemPanel>();
 		current = 0;
+		
 		reverseItem = new HashMap<ItemPanel, Integer>();
 		initUI();
 		
@@ -119,7 +128,7 @@ public class ItemContainer extends JPanel {
 		content.add(first, "wrap");
 		//content.add(new ItemPanel(this), "wrap");
 				
-		JScrollPane scroll = new JScrollPane(content);
+		scroll = new JScrollPane(content);
 		
 		add(scroll, BorderLayout.CENTER);
 		
@@ -127,13 +136,16 @@ public class ItemContainer extends JPanel {
 		JPanel totales = new JPanel();
 		
 		add(totales, BorderLayout.PAGE_END);
-		totales.setLayout(new MigLayout("", "350[right][80][][100]","[][][]"));
+		totales.setLayout(new MigLayout("", "400[right][30][][100]","[][][][][]"));
 		
 		JLabel ivaLabel = new JLabel("IVA: ");	
 		JLabel totalLabel = new JLabel("Total: ");
 		JLabel porciento = new JLabel("%");
-		JLabel subLabel = new JLabel("Subtotal :");
-		new JLabel("Descuento :");
+		JLabel netLabel = new JLabel("Valor Neto: ");
+		JLabel descLabel = new JLabel("Descuento: ");
+		JLabel subLabel = new JLabel("Valor Bruto: ");
+		
+		
 		
 		ivaPorciento = new JTextField("" + DEFAULT_IVA);
 		ivaValor = new JTextField();
@@ -144,25 +156,58 @@ public class ItemContainer extends JPanel {
 				updateIVA();
 			}
 		});
+
 		
 		totales.add(subLabel, "cell 0 0");
 		
+		subValor = new JTextField();
+		subValor.setEditable(false);
+
+		
+		totales.add(subValor, "cell 3 0,width :100:");
+
+		descValor = new JTextField();
+		descValor.setEditable(false);
+		
+		totales.add(descLabel, "cell 0 1");
+		totales.add(descValor, "cell 3 1, width :100:");
+		
 		subtotalValor = new JTextField();
 		subtotalValor.setEditable(false);
-		totales.add(subtotalValor, "cell 3 0,width :100:");
-
-		totales.add(ivaLabel, "cell 0 1");
-		totales.add(ivaPorciento, "cell 1 1,width :80:");
-		totales.add(porciento, "cell 2 1");
-		totales.add(ivaValor, "cell 3 1,width :100:");
+				
+		totales.add(netLabel, "cell 0 2");
+		totales.add(subtotalValor, "cell 3 2, width :100:");
+				
+		totales.add(ivaLabel, "cell 0 3");
+		totales.add(ivaPorciento, "cell 1 3,width :30:");
+		totales.add(porciento, "cell 2 3");
+		totales.add(ivaValor, "cell 3 3,width :100:");
 		
-		totales.add(totalLabel, "cell 0 2" );
+		totales.add(totalLabel, "cell 0 4" );
 		totalValor = new JTextField();
 		totalValor.setEditable(false);
-		totales.add(totalValor, "cell 3 2,width :100:");
+		totales.add(totalValor, "cell 3 4,width :100:");
 	}
 	
-	
+	public void scrollDown() {
+		
+		JViewport vp = scroll.getViewport();
+		Rectangle rect = vp.getBounds();
+			
+		rect.setLocation((int) rect.getX(),(int) rect.getY() + 100);
+		
+		vp.scrollRectToVisible(rect);
+	}
+	public void scrollUp() {
+		
+		JViewport vp = scroll.getViewport();
+		Rectangle rect = vp.getBounds();
+			
+		//System.out.printf("%d %d", rect.getX(), rect.getY());
+		rect.setLocation((int) rect.getX(),0);
+		
+		vp.scrollRectToVisible(rect);
+	}
 
 
 	/*
@@ -172,7 +217,8 @@ public class ItemContainer extends JPanel {
 	public void shiftEvent() {
 		//move the cursor to next one
 		//update the total
-		updateSubtotal();
+		updateSubtotal(); //also update descuento
+		
 		getFocus();
 	}
 	
@@ -184,7 +230,7 @@ public class ItemContainer extends JPanel {
 			ItemPanel next = items.get(++current);
 			next.focus();
 		} 
-		else if (current == threshold && items.get(threshold).getProd() == null) {
+		else if (current == threshold && items.get(threshold).getProdCont() == null) {
 			items.get(threshold).focus();
 		}
 		else {
@@ -202,21 +248,30 @@ public class ItemContainer extends JPanel {
 	
 	public void updateSubtotal() {
 		BigDecimal currentTotal = new BigDecimal(0);
+		BigDecimal desc = new BigDecimal(0);
 		for (ItemPanel item : items) {	
 			currentTotal = currentTotal.add(item.getTotal());
+			desc = desc.add(item.getDescuento());
 		}
-		subtotal = currentTotal;
+		descuento = desc;
+		descValor.setText(descuento.toString());
+		subValor.setText(currentTotal.toString());
+		subtotal = currentTotal.subtract(descuento);
+		
 		subtotalValor.setText(subtotal.toString());
+		
 		if (!ivaPorciento.getText().equals(""))
 			updateIVA();
 	}
 	
 	public void updateIVA() {
-		int percent = Integer.parseInt(ivaPorciento.getText());
+		int percent = 0;
+		try {
+			percent = Integer.parseInt(ivaPorciento.getText());
+		} catch (NumberFormatException e) {}
 		
 		BigDecimal iva = subtotal.multiply(new BigDecimal(percent))
-		        .divide(new BigDecimal(100)
-		 );
+		        .divide(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
 		ivaValor.setText(iva.toString());
 		total = iva.add(subtotal);
 		totalValor.setText(total.toString());
@@ -232,34 +287,33 @@ public class ItemContainer extends JPanel {
     }
 	
 	
-	public long saveFact(String forma) throws ConfigurationException, RepositoryException {
+	public long saveFact(String forma)  {
 		//get codigo de factura
 		long codigoFact = usuario.getLastFactura();
 		//guardar la factura
-	
-		int bodegaId = Integer.parseInt(Config.getConfig().getBodega());
+		int bId = Integer.parseInt(Config.getConfig().getBodega());
 		
-		Transaction txn = MyRepository.getRepository().enterTransaction();
+		
+
+		Transaction txn = null; 
 		try {
+			txn = MyRepository.getRepository().enterTransaction();
 			boolean modificado = false;
 			Factura factura = getStorableFor(Factura.class);
 			factura.setCodigo(codigoFact);
 			factura.setVendedor(usuario);
 			factura.setCliente(cliente);
-			factura.setFecha(new DateTime());
-			int bId = Integer.parseInt(Config.getConfig().getBodega());
+			factura.setFecha(DateTime.now());
 			factura.setBodegaId(bId);
 			factura.setFormaPago(forma);
 			factura.setTotal(total);
 			factura.setModificado(false);
-			
-			
+			factura.setEliminado(false);
 			factura.insert();
 			
 			int i = 0;
 			for (ItemPanel v : items) {
-				v.saveFacturaItem(i, codigoFact);
-				substractProd(v.getProd(), v.getCantidad(), bodegaId);
+				v.saveFacturaItem(i, factura.getId());
 				if (v.precioModificado())
 					modificado = true;
 				i++;
@@ -272,17 +326,24 @@ public class ItemContainer extends JPanel {
 			usuario.update();
 			
 			txn.commit();
-		} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		} finally {
 			txn.exit();
+			return 0;
+		} catch (Exception e) {
+			
+				try {
+					if (txn != null)
+						txn.exit();
+				} catch (PersistException e1) {
+					e1.printStackTrace();
+				}
+			e.printStackTrace();
+			return -1;
+			
 		}
 			
 		//hacer la resta de inventario
 		
 		
-		return 0;
 	}
 	
 
@@ -316,7 +377,8 @@ public class ItemContainer extends JPanel {
 			}
 			txn.commit();
 		} catch (RepositoryException e) {
-			e.printStackTrace();
+			txn.exit();
+			throw new PersistException(e);
 		} finally {
 			txn.exit();
 		}
@@ -349,8 +411,12 @@ public class ItemContainer extends JPanel {
 		ivaValor.setText("");
 		totalValor.setText("");
 		subtotalValor.setText("");
+		subValor.setText("");
+		descValor.setText("");
 		
 		cliente = null;
+		
+		scrollUp();
 	}
 	
 	public void setCliente(Cliente cliente) {
@@ -365,21 +431,28 @@ public class ItemContainer extends JPanel {
 		return subtotal;
 	}
 	public void loadNota(NotaDeVenta laNota) throws RepositoryException {
-		clear();
+		//clear();
 		
 		cliente = laNota.getCliente();
-		Query<ItemVenta> itemQuery = laNota.getItems();
-		Cursor<ItemVenta> cur = itemQuery.fetch();
+		List<ItemVenta> itemQuery = getItemVenta(laNota.getCodigo());
 			
-		int currentUpdated = 0;
-		while (cur.hasNext()) {
-			ItemVenta curItem = cur.next();
-		
-			items.get(currentUpdated).loadItem(curItem);
+		//int currentUpdated = 0;
+		for (ItemVenta i : itemQuery) {
+			items.get(current).loadItem(i);
 			shiftEvent();
-			currentUpdated++;
+			//currentUpdated++;
 		}
 				
+	}
+
+	public BigDecimal getDescuento() {
+		if (descuento == null)
+			return BigDecimal.ZERO;
+		return descuento;
+	}
+
+	public void search() {
+		items.get(current).buscarProd();
 	}
 	
 	

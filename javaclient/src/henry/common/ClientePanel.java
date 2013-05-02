@@ -42,15 +42,7 @@ public class ClientePanel extends JPanel {
 		buscar.setText("Bus");
 		buscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				SearchDialog dialog = new SearchDialog("Cliente", "Cliente");
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-				
-				cliente = (Cliente) dialog.result;
-				nombre.setText(cliente.getApellidos() + " " + cliente.getNombres());
-				codigo.setText(cliente.getCodigo());
-				
-				contenido.getFocus();
+				search();
 				
 			}
 		});
@@ -98,7 +90,7 @@ public class ClientePanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					loadUI("general");
+					loadUI("NA");
 				} catch(RepositoryException e1) {
 					e1.printStackTrace();
 				}
@@ -130,6 +122,7 @@ public class ClientePanel extends JPanel {
 		cliente = getClienteByCode(clientCode);
 		nombre.setText(cliente.getApellidos() + " " + cliente.getNombres());
 		nombre.setEditable(false);
+		create_client = false;
 	}
 	
 	public Cliente getCliente() {
@@ -162,6 +155,7 @@ public class ClientePanel extends JPanel {
 
 		//System.err.println("codigo es " + codigo.getText());
 		nombre.setText("");
+		general.setSelected(false);
 		cliente = null;
 	}
 
@@ -172,4 +166,17 @@ public class ClientePanel extends JPanel {
 		codigo.setText(cliente.getCodigo());
 	}
 
+	
+	public void search() {
+		SearchDialog dialog = new SearchDialog("Cliente", "Cliente");
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setVisible(true);
+		
+		cliente = (Cliente) dialog.result;
+		nombre.setText(cliente.getApellidos() + " " + cliente.getNombres());
+		codigo.setText(cliente.getCodigo());
+		create_client = false;
+		
+		contenido.getFocus();
+	}
 }

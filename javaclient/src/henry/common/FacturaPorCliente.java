@@ -58,7 +58,7 @@ public class FacturaPorCliente extends JDialog {
 	 * Create the dialog.
 	 */
 	public FacturaPorCliente() {
-		super(null, Dialog.ModalityType.DOCUMENT_MODAL);
+		super(null, Dialog.ModalityType.APPLICATION_MODAL);
 		initUI();
 	}
 	

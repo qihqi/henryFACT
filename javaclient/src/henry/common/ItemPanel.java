@@ -1,5 +1,6 @@
 package henry.common;
 
+import henry.carbonadoObjects.Contenido;
 import henry.carbonadoObjects.ItemFactura;
 import henry.carbonadoObjects.ItemVenta;
 import henry.carbonadoObjects.Producto;
@@ -31,12 +32,12 @@ import java.awt.Font;
 public class ItemPanel extends JPanel {
 
 	/** This Class represents a row in a nota de venta o factura
-	 *  
-	 *  TODO:
-	 *  	-Make them navigable with tab/shift tab
 	 *  	
 	 */
-	private Producto prod = null;
+	
+	private Contenido contenido = null;
+	
+	
 	
 	private JTextField codigo;
 	private JTextField cantidad;
@@ -50,11 +51,11 @@ public class ItemPanel extends JPanel {
 
 	private BigDecimal total;
 	private BigDecimal nuevoPrecio = null;
+	private BigDecimal descuento = null;
 	
 	public ItemPanel(ItemContainer parent_) {
 		initUI();
 		parent = parent_;
-		
 	}
 	
 	//this class notifies the parent about currently selected item
@@ -102,22 +103,7 @@ public class ItemPanel extends JPanel {
 		buscar.setFont(new Font("Dialog", Font.BOLD, 10));
 		buscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SearchDialog dialog = new SearchDialog("Producto", "Producto");
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-				
-				prod = (Producto) dialog.result;
-
-				if (prod == null) //producto no encontrado, no haces nada
-					return;
-				
-				codigo.setText(prod.getCodigo());
-				try {
-					loadProduct();
-				} catch (RepositoryException e1) {
-					//this should never run
-					e1.printStackTrace();
-				}
+				buscarProd();
 			}
 		});
 		
@@ -127,6 +113,7 @@ public class ItemPanel extends JPanel {
 					loadProduct();
 					cantidad.requestFocusInWindow();
 				} catch (RepositoryException ex) {
+					ex.printStackTrace();
 					cantidad.requestFocusInWindow();
 					codigo.requestFocusInWindow();
 				}
@@ -134,7 +121,7 @@ public class ItemPanel extends JPanel {
 			}
 		});
 		
-		
+	
 		codigo.addMouseListener(new ReFocusListener(this));
 		codigo.addFocusListener(new HighlightFocusListener(codigo));
 		
@@ -143,7 +130,7 @@ public class ItemPanel extends JPanel {
 				try {
 					loadCantidad();
 					parent.shiftEvent();
-			
+					parent.scrollDown();
 				}
 				catch (NullPointerException n) {
 					//the product is not loaded
@@ -162,7 +149,7 @@ public class ItemPanel extends JPanel {
 		newPrice.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (prod == null) {
+				if (contenido == null) {
 					(new SimpleDialog("Selecciona producto primero!")).setVisible(true);
 				}
 					
@@ -173,6 +160,7 @@ public class ItemPanel extends JPanel {
 				
 				if (dialog.isAccepted) {
 					setNuevoPrecio(dialog.getNuevoPrecio());
+					parent.shiftEvent();
 				}
 			}
 		});
@@ -193,26 +181,57 @@ public class ItemPanel extends JPanel {
 	
 	public void loadProduct() throws RepositoryException {
 		String code = codigo.getText();
-		if (prod == null || !prod.getCodigo().equals(code)) {
+		
+		if (contenido == null || !contenido.getProdId().equals(code)) {
 			//load new product
-			prod = getProducto(code);
+			contenido = fetchContenido(code);
 		}
 		//update gui
-		nombre.setText(prod.getNombre());
-		precio.setText(prod.getPrecio().toString());
+		//Producto prod = contenido.getProducto();
+		
+		nombre.setText(contenido.getNombreProd());
+		precio.setText(contenido.getPrecio().toString());
 	}
 	
 	public void loadCantidad() {
-		if (prod == null)
+		if (contenido == null)
 			throw new NullPointerException();
 		//this throws NumberFormatException
 		BigDecimal cant = new BigDecimal(cantidad.getText());
-		BigDecimal precio = (nuevoPrecio == null) ?
-			             prod.getPrecio() : nuevoPrecio;
-	
-		total = precio.multiply(cant);
+		if (cant.compareTo(BigDecimal.ZERO) < 0) {
+			alert("Cantidad no puede ser negativo");
+			throw new NullPointerException();
+		}
+		BigDecimal p = getPrecio(); 
+		
+		precio.setText(p.toString());
+		if (nuevoPrecio != null) {
+			precio.setBackground(Color.YELLOW);
+			p = nuevoPrecio;
+		}
+		else 
+			precio.setBackground(null);
+		
+		Integer cantMayor = contenido.getCantMayor();
+		
+		// descuentos
+		int thres = (cantMayor != null) ? 
+				cantMayor.intValue() : Config.getConfig().getDescCount();
+		
+		descuento = BigDecimal.ZERO;
+		if (cant.compareTo(new BigDecimal(thres)) >= 0) {
+			descuento = contenido.getDescuento()
+			                     .multiply(cant)
+			                     .setScale(2, BigDecimal.ROUND_HALF_UP); 
+		}
+        		
+		total = p.multiply(cant).setScale(2, BigDecimal.ROUND_HALF_UP);
+	    int descGlobal = Config.getConfig().getGlobalDesc();
+        descuento = total.multiply(new BigDecimal(descGlobal / 100.0)).setScale(2, BigDecimal.ROUND_HALF_UP);
+		   
 	    subtotal.setText(total.toString());
 	
+	    
 	}
 
 	/** Load the item give producto, cantidad, and modified precio 
@@ -227,27 +246,23 @@ public class ItemPanel extends JPanel {
 	{
 		codigo.setText(item.getCodigoProd());
 		cantidad.setText("" + item.getCantidad());
-		prod = item.getProducto();
-		
+		codigo.setText( item.getCodigoProd());
+		contenido = item.getCont();
 		loadProduct();
 		
 		setNuevoPrecio(item.getNuevoPrecio());
 		
-		loadCantidad();
 	}
 	public void setNuevoPrecio(BigDecimal np) {
-		if (prod == null)
+		if (contenido == null)
 			return;
 		nuevoPrecio = np;
-		if (np != null) {
-			precio.setText(np.toString());
+		if (cantidad.getText()!= null && !cantidad.getText().equals(""))
+			loadCantidad();
+		else {
+			precio.setText(nuevoPrecio.toString());
 			precio.setBackground(Color.YELLOW);
 		}
-		else {
-			precio.setText(prod.getPrecio().toString());
-			precio.setBackground(null);
-		}
-		loadCantidad();
 	}
 	public void focus() {
 		codigo.requestFocusInWindow();
@@ -255,24 +270,26 @@ public class ItemPanel extends JPanel {
 	
 	public BigDecimal getTotal() {
 		if (total == null)
-			total = new BigDecimal(0);
+			total = BigDecimal.ZERO;
 		
 		return total;
 	}
 	
-	public Producto getProd() {
-		return prod;
+	public Contenido getProdCont() {
+		return contenido;
 	}
 	
-	public int getCantidad() {
-		String s = cantidad.getText();
-		if (s.equals(""))
-			return 0;
-		return Integer.parseInt(cantidad.getText());
+	public BigDecimal getCantidad() {
+		try {
+			return new BigDecimal(cantidad.getText());
+	
+		} catch (NumberFormatException e){
+			return BigDecimal.ZERO;
+		}
 	}
 	
 	public void clear() {
-		prod = null;
+		contenido = null;
 		total = new BigDecimal(0);
 		codigo.setText("");
 		cantidad.setText("");
@@ -282,28 +299,37 @@ public class ItemPanel extends JPanel {
 		subtotal.setText("");
 	}
 	
+	public BigDecimal getPrecio() { //this is the precio que escrita!!
+		if (contenido == null)
+			return null;
+		
+		if (nuevoPrecio != null)
+			return nuevoPrecio;
+		else 
+			return contenido.getPrecio();
+	}
+	
     public void saveFacturaItem(int num, long codigo) 
     		throws ConfigurationException, RepositoryException 
     {
-    	if (prod == null)
+    	if (contenido == null)
     		return;
+    	
     	ItemFactura item = getStorableFor(ItemFactura.class);
     	item.setCodigoFactura(codigo);
-    	item.setProducto(prod);
+    	item.setCodigoProd(contenido.getProdId());
     	item.setItemNo(num);
     	
     	//usar precio cambiado si se ha cambiado
-    	if (nuevoPrecio == null) {
-    		item.setPrecio(prod.getPrecio());
-    		item.setModificado(false);
-    	} 
-    	else {
-    		item.setPrecio(nuevoPrecio);
-    		item.setModificado(true);
-    	}
-    	  
-    	item.setCantidad(getCantidad());
+		item.setPrecio(getPrecio());
+		item.setModificado(nuevoPrecio != null);
+	
+		BigDecimal cant = getCantidad();
+    	item.setCantidad(cant);
     	
+    	BigDecimal newCantidad = contenido.getCantidad().subtract(cant);
+    	contenido.setCantidad(newCantidad);
+    	contenido.update();
     	item.insert();
     }
 
@@ -311,22 +337,50 @@ public class ItemPanel extends JPanel {
     		throws ConfigurationException, RepositoryException 
     //requires: prod not null
     {
-    	if (prod == null)
+    	if (contenido == null)
     		return;
     	ItemVenta item = getStorableFor(ItemVenta.class);
     	item.setCodigoVenta(codigo);
-    	item.setProducto(prod);
+    	item.setCodigoProd(contenido.getProdId());
     	item.setItemNo(num);
     	item.setCantidad(getCantidad());
     	item.setNuevoPrecio(nuevoPrecio);
-    	
     	item.insert();
     }
-	
+    
+    //lanzar la ventana de buscar productos
+    public void buscarProd() {
+		SearchDialog dialog = new SearchDialog("Producto", "Producto");
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setVisible(true);
+		
+		Producto prod = (Producto) dialog.result;
+
+		if (prod == null) //producto no encontrado, no haces nada
+			return;
+		
+		codigo.setText(prod.getCodigo());
+		try {
+			loadProduct();
+			cantidad.requestFocusInWindow();
+
+		} catch (RepositoryException e1) {
+			//this should never run
+			e1.printStackTrace();
+		}
+	}
+
+    
+    
     public boolean precioModificado() {
     	return nuevoPrecio != null;
     }
     
+    public BigDecimal getDescuento() {
+    	return descuento == null ? BigDecimal.ZERO : descuento;
+    }
     
-	
+	public String getNombreProd() {
+		return nombre.getText();
+	}
 }

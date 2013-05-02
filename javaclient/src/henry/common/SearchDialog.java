@@ -5,7 +5,6 @@ import henry.carbonadoObjects.Producto;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,18 +75,13 @@ public class SearchDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public SearchDialog(String s, String type) {
-		super(null, Dialog.ModalityType.DOCUMENT_MODAL);
+		super(null, Dialog.ModalityType.APPLICATION_MODAL);
 		searchType = type;
-		if (type.equals("Cliente"))
-			engine = new Searchable(Searchable.CLIENTE);
-		else if (type.equals("Producto"))
-			engine = new Searchable(Searchable.PRODUCTO);
-		else
-			throw new RuntimeException("illegal search type for Searchable: " + type);
+		engine = new Searchable();
 		initUI(s);
 	}
 	public void initUI(String s) {
-		setBounds(100, 100, 547, 543);
+		setBounds(100, 100, 502, 255);
 
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new MigLayout());
@@ -123,6 +117,7 @@ public class SearchDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String criteria = e.getActionCommand();
+				
 				listContent.clear();
 				if (searchType.equals("Cliente")) {
 					ArrayList<Cliente> list = engine.search(criteria, Cliente.class);
@@ -150,10 +145,6 @@ public class SearchDialog extends JDialog {
 				}
 			}
 		});
-		
-		JPanel buttonPane = new JPanel();
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		
 		
 
