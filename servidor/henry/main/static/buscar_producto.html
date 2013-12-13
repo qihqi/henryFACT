@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <script type="text/javascript" src="/static/jquery-1.7.2.js"></script>
+        <script type="text/javascript" src="/static/row.js" ></script>
+        <script type="text/javascript">
+            
+            function makeClickable(a) {
+                var elm = $('<p>');
+                elm.append(a.nombre);
+                elm.attr("id", a.codigo);
+                
+                elm.click(function() {    
+                    if (window.opener && !window.opener.closed){
+                        var id = opener.codigo_click
+                        opener.$("input#"+id+"[name=\"codigo\"]").val(a.codigo);
+                        opener.$("input#"+id+"[name=\"cant\"]").val(a.cant);
+                        opener.$("span#"+id).html(a.nombre);
+                        opener.$("input#"+id+"[name=\"cant\"]").focus();
+                        window.close();
+                    }
+
+                });
+                return elm;
+            }
+            function getProductos() {
+                var nombre = $("#id_nombre").val();
+                //send by ajax
+                var bodega = window.opener.$("#id_bodega").val();
+                var data = "codigo=" + nombre + "&bodega=" + bodega;
+                $.ajax( {
+                        url:"/r/producto/buscar_producto", 
+                        data : data,
+                        success:function(result){
+                            if (result.status) {
+                                var a = result.prod;    
+                                $("#dest").html("");
+                                for ( var i = 0; i < a.length; i++) {
+                                    $("#dest").append(makeClickable(a[i]));
+                                }
+                            }
+                            else {
+                                alert(a);
+                            }
+                        }
+                });
+            }
+            $(document).ready(function(){
+                $("button").click(
+                    getProductos
+                );
+            });
+        </script>
+    </head>
+
+    <body>
+        <label for="id_nombre" >Nombre</label> <input id="id_nombre"/>
+        <button value="Buscar">Buscar </button>
+        <table id="dest"> 
+        </table>
+    </body>
+</html>

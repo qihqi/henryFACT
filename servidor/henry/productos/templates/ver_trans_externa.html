@@ -1,0 +1,40 @@
+{% extends "ver_ingreso.html"%}
+
+{% block header %}
+
+        <form action="{{action}}" method="post" >
+            {% csrf_token %}
+            <button onClick="window.print();return false;" > Imprimir </button>
+            <button onClick="window.location='/r/producto/postear';return false;" > Regresar al principio </button>
+            <input name="codigo" type="hidden" value="{{ingreso.id}}" />
+            <input name="action" type="submit" value="Postear" />
+        </form>
+        <h3>
+            Transferencia Externa:
+        {%if ingreso.ingresodetalle.entrada%}
+            {{ingreso.ingresodetalle.origen}} 
+            a {{ingreso.bodega}} 
+        {%else%}
+            {{ingreso.bodega}} a
+            {{ingreso.ingresodetalle.origen}}  </h3>
+        {%endif%}
+        <h4> Codigo: {{ingreso.id}}, Codigo Externa: {{ingreso.ingresodetalle.numero_externa}}</h4>
+        <table align="center" width=600>
+            <tr>
+                <th width=150>Ingresado por:</th>
+                <td width=150>{{ingreso.usuario.username}}</td> 
+                <th width=100>Fecha</th>
+                <td>{{ingreso.fecha}}</td> 
+            </tr>
+            <tr>
+                <th width=150>Posteado:</th>
+                {%if ingreso.ingresodetalle.posteado%}
+                    <td width=150>Si</td> 
+                    <th width=150>Posteado por: </th>
+                    <td>{{ingreso.ingresodetalle.aprobado_por.username}}</td> 
+                {%else%}
+                    <td width=200>No</td> 
+                {%endif%}
+            </tr>
+        </table>
+{% endblock %}

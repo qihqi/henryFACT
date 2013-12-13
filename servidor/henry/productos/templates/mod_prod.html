@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <script type="text/javascript" src="/static/jquery-1.7.2.js" ></script>
+        <script type="text/javascript">
+        function popup(){
+
+                var newwindow=window.open("/static/buscar_producto.html",'name','height=700,width=500, scrollbars=yes');
+                window.codigo_click = "id_source";
+                if (window.focus) 
+                        newwindow.focus();
+                return false;
+        }
+            function load_prod(event) {
+                if (event.which == 13){
+                    event.preventDefault();
+                    var id = $(this).attr("id");
+                    var codigo = $(this).val();
+                    var bodega = $("#id_bodega").val();
+                    var data = "codigo=" + codigo + "&bodega=" + bodega;
+                    var x = $(this);
+                    $.ajax({
+                            url : "/r/producto/get_prod_cont", 
+                            data : data,
+                            success:function(result){
+                                if (result.status) {
+                                    $("span#"+id).html(result.nombre);
+                                   var cant = $("input#id_source[name=cant]");
+                                   cant.val(result.cant)
+                                    cant.focus();
+                                }
+                                else {
+                                    $("span#"+id).html("Codigo Equivocado");
+                                    $(this).select();
+                               }
+                            }
+                    });
+                }
+            }
+            function check_val(event) {
+                if (event.which != 13)
+                    return;
+                event.preventDefault();
+                var input = $(this).val();
+                var num = parseFloat(input);
+
+                if (!((input - 0) == input && input.length > 0) || num < 0) //no es numero
+                    alert("Ingrese un numero valido");
+                else
+                    $("#id_dest").focus();
+            }
+        $(document).ready(function(){
+            $("input#id_source[name=codigo]").keypress(load_prod);
+            $("input#id_source[name=cant]").keypress(check_val);
+        });
+        </script>
+    </head>
+    <body>
+        {%autoescape off%}
+        <p>{{msg}}</p>
+        {%endautoescape %}
+        <form method="post" action="{{action}}">
+            {%csrf_token%}
+            <h2>Cambiar cantidad de producto</h2>
+            <label> Bodega: {% include "choose_bodega.html" with bodegas=bodegas%} </label>
+            <input type="submit" value="Guardar" />
+            <p> 
+                
+                <a href="" onClick="return popup();" id="id_source" > buscar</a>
+                <input name="codigo" id="id_source" size=5 />  
+                <input name="cant" id="id_source" size=5 />
+                <span id="id_source"></span>
+            </p>
+        </form>
+    </body>
+</html>

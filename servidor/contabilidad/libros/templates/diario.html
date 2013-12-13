@@ -1,0 +1,82 @@
+<html>
+{% load tags %}
+    <head> 
+        <script type="text/javascript">
+            function action(str, id) {
+                alert(str + " " + id); 
+            }
+
+            function popup() {
+                var addr = '{{next}}';
+                var x=addr.replace("ver_diario/0", "ver_diario/1");
+                var win = window.open(x, 'name', 'height=700, width=1000, scrollbars=yes');
+                if (window.focus) {
+                    win.focus();
+                }
+                return false;
+            }
+        </script>
+        </script>
+        <style>
+            body {
+                text-align : center;
+            }
+            .centro {
+                text-align:center;
+            }
+            .right {
+                text-align:right;
+            }
+        </style>
+        <title> Libro Diario </title>
+    </head> 
+    <body>
+        <button onClick="popup();" > Imprimir </button>
+        <button onClick="window.location='/c/contab';" > Regresar al principio </button>
+        <h2> QUINAL S.A. </h2>
+        <h3> Libro diario de Transaciones </h3>
+
+        <table width=1000 align="center" border=1px>
+            <tr>
+                <th>Fecha</th>
+                <th>Codigo <br/> Cuenta</th>
+                <th>Detalles de las Transacciones</th>
+                <th>Debitos</th>
+                <th>Creditos</th>
+                <th>Referencia <br/> Combrobante</th>
+            </tr>
+            {%for c in records %}
+            <tr>
+                <td class="centro">{{c.fecha.isoformat}}</td>
+                <td class="centro">{{c.cuenta_id}}</td>
+                <td>{{c.cuenta.nombre}}</td>
+                <td class="right">
+                    {%if c.valor < 0 %}
+                        {{c.valor|absolute}}
+                    {%endif%}
+                </td>
+                <td class="right">
+                    {%if c.valor > 0 %}
+                        {{c.valor|absolute}}
+                    {%endif%}
+                </td>
+                <td class="centro">{{c.ref_full}}</td>
+                {% if not impresion %}
+                <td> 
+                    <a href="/c/contab/eliminar/{{c.id}}?next={{next}}" >Eliminar</a>
+                    &nbsp;
+                    <a href="/c/contab/editar/{{c.id}}?next={{next}}" >Editar</a>
+                </td>
+                {% endif%}
+            </tr>
+            {%endfor %} 
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="right">Total:</th>
+                <th class="right">{{debito}}</th>
+                <th class="right">{{credito}}</th>
+            </tr>
+        </table>
+    </body>
+</html>

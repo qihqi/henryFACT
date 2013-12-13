@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Reempaque : {{ingreso.bodega}} </title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+            .cant {
+                text-align: right; 
+            }
+            .codigo {
+                text-align: left; 
+            }
+            
+        </style>
+    </head>
+
+    <body>
+        {% block header %}
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+	    <h4>Reempaque Codigo: {{ing.id}}</h4>
+        <table align="center" width=600>
+            <tr>
+                <th width=150>Ingresado por:</th>
+                <td width=200>{{ing.usuario.username}}</td> 
+                <th width=100>Fecha</th>
+                <td>{{ing.fecha}}</td> 
+            </tr>
+        </table>
+        {%endblock%}
+        <!--items-->
+        <br />
+        <hr />
+        <table width=600 align="center">
+            
+            <tr>
+                <th width=100 class="codigo">Codigo</th>
+                <th>Nombre</th>
+                <th width=100 class="cant">Cantidad</th>
+            </tr>
+        <tr><td style="text-align:center" colspan=3><b>Salio de {{ing.bodega}} productos:</b></td></tr>
+            {% for i in ing.ingresoitem_set.all %}
+            <tr>
+                <td width=100>{{i.producto.codigo}}</td> 
+                <td>{{i.producto.nombre}}</td> 
+                <td width=100 class="cant">{{i.rounded_cant}}</td> 
+            </tr>
+            {%endfor %}
+
+        <tr><td style="text-align:center" colspan=3><b>Llego a {{ingr.bodega}} productos:i</b></td></tr>
+        <table width=600 align="center">
+            
+            {% for i in ingr.ingresoitem_set.all %}
+            <tr>
+                <td width=100>{{i.producto.codigo}}</td> 
+                <td>{{i.producto.nombre}}</td> 
+                <td width=100 class="cant">{{i.rounded_cant}}</td> 
+            </tr>
+            {%endfor %}
+        </table>
+    </body>
+</html>

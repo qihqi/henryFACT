@@ -1,0 +1,13 @@
+drop table ordenes_eliminados;
+drop table items_de_despacho ;
+drop table items_de_venta ;
+drop table contenido_de_bodegas;
+drop table bodegas ;
+drop table ingresos ;
+drop table ingreso_items ;
+drop table notas_de_venta ;
+drop table ordenes_de_despacho ;
+drop table descuentos;
+drop table productos ;
+drop table usuarios ;
+drop table clientes ;

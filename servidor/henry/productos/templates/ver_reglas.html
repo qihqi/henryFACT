@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Reglas de Reempaque</title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+        </style>
+    </head>
+    <body align="center">
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r/producto/ver_reglas_form';" > Regresar al principio </button>
+        <table width=800 align="center">
+            <tr><td colspan=3 style="{text-align:center;font-family:'Arial'}"><b>{{nombre}}</b></td>
+
+            {% for x in ordenes %}
+            <tr>
+                <td style="text-align:center;"> <b>Un</b> </td>
+                <td width=100 > {{x.origin_id}} </td>
+                <td  > <i>{{x.origin.nombre}} </i></td>
+                <td style="text-align:center;"> equivale a </td>
+                <td width=50 > <b>{{x.multiplier}}</b> </td>
+                <td style="text-align:center;"> {{x.dest_id}} </td>
+                <td style="text-align:center;"> <i>{{x.dest.nombre}}</i> </td>
+                <td style="text-align:center;">
+                    <a href="/r/producto/mod_reglas?codigo={{x.origin_id}}&next={{next}}">editar</a>
+                </td>
+            </tr>
+            {%empty%}
+                <p>Reglas no encontrados</p>
+            {%endfor %}
+        </table>
+    </body>
+</html>

@@ -1,0 +1,6 @@
+
+<select id="{{id|default:"id_bodega"}}" name="{{name|default:"bodega"}}">
+    {% for x in bodegas %}
+    <option value="{{x.id}}"> {{x.nombre}} </option> 
+    {% endfor %}
+</select>

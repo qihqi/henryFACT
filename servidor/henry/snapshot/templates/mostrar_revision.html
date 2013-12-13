@@ -1,0 +1,18 @@
+
+<h3> {{ nombre }} </h3>
+<table width=700 align=center>
+    <tr>
+        <th> CODIGO </th>
+        <th> NOMBRE </th>
+        <th> CANTIDAD</th>
+        <th> CANT CONTADO</th>
+    </tr>
+{% for x in items %}
+    <tr>
+        <td> {{x.prod_id}} </td>
+        <td> {{x.prod.nombre}} </td>
+        <td style="text-align:right;"> {{x.cant|floatformat:-3}}</td>
+        <td> _____________</td>
+    </tr>
+{%endfor %}
+</table>

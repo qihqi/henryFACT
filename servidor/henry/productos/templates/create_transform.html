@@ -1,0 +1,74 @@
+{%extends "base.html" %}
+
+{%block script %}
+    <style>
+        .annot {font-size: 11;}
+    </style>
+        <script type="text/javascript" src="/static/jquery-1.7.2.js" ></script>
+        <script type="text/javascript">
+            function load_prod(event) {
+                if (event.which == 13){
+                    event.preventDefault();
+                    var id = $(this).attr("id");
+                    var codigo = $(this).val();
+                    var bodega = $("#id_bodega").val();
+                    var data = "codigo=" + codigo ;
+                    var x = $(this);
+                    $.ajax( {
+                            url:"/r/producto/get_nombre", 
+                            data : data,
+                            success:function(result){
+                                if (result.status) {
+                                    $("span#"+id).html(result.nombre);
+                                    if (x.attr("id") == "id_source"){
+                                        $("#id_mult").focus();
+                                    }
+                                }
+                                else {
+                                    $("span#"+id).html("Codigo Equivocado");
+                                    $(this).select();
+                               }
+                            }
+                    });
+                }
+            }
+            function check_val(event) {
+                if (event.which != 13)
+                    return;
+                event.preventDefault();
+                var input = $(this).val();
+                var num = parseFloat(input);
+
+                if (!((input - 0) == input && input.length > 0) || num < 0) //no es numero
+                    alert("Ingrese un numero valido");
+                else
+                    $("#id_dest").focus();
+            }
+        $(document).ready(function(){
+            $("#id_source").keypress(load_prod);
+            $("#id_mult").keypress(check_val);
+            $("#id_dest").keypress(load_prod);
+        });
+        </script>
+{%endblock %}
+
+{%block content%}
+    {%autoescape off%}
+    <p> {{msg}}</p>
+    {%endautoescape %}
+    <form method="post" action="{{action}}">
+        {%csrf_token%}
+        <input type="submit" value="Guardar" />
+        <p>Un   <input name="source" id="id_source" size=5/>
+            <span class="annot">(producto de origen)</span>
+                &nbsp; <span id="id_source"></span> </p>
+     <p>equivale a   <input name="mult" id="id_mult" size=5 />
+            <span class="annot">(cantidad)</span>
+     </p>
+        <p><input name="dest" id="id_dest" size=5>
+            <span class="annot">(producto de destino)</span>
+            &nbsp;<span id="id_dest"> </span></p>
+        
+    </form>
+
+{%endblock %}

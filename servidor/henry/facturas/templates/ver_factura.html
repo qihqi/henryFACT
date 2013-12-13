@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title> Ingresos : {{ingreso.bodega}} </title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+            .cant {
+                text-align: right; 
+            }
+            .codigo {
+                text-align: left; 
+            }
+            
+        </style>
+    </head>
+
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <h3>
+        {% if is_nota %}
+            Nota De Venta :
+        {% else %}
+            Factura : 
+        {%endif%} {{factura.codigo}} **** Duplicado **** 
+        </h3>
+        <!-- item -->
+        <table align="center" width=600>
+            <tr>
+                <th width=150>Ingresado por:</th>
+                <td width=200>{{factura.vendedor.username}}</td> 
+                <th width=100>Fecha</th>
+                <td>{{factura.fecha}}</td> 
+            </tr>
+            <tr>
+                <th width=150>RUC/Cedula: </th>
+                <td width=200>{{factura.cliente.codigo}}</td> 
+                <th width=100>Direccion: </th>
+                <td>{{factura.cliente.direccion|default:"" }}</td> 
+            </tr>
+            <tr>
+                <th width=150>Cliente: </th>
+                <td width=200>{{factura.cliente.fullname}}</td> 
+                <th width=100>Telf: </th>
+                <td>{{factura.cliente.telefono|default:""}}</td> 
+            </tr>
+        </table>
+        <!--items-->
+        <br />
+        <hr />
+        <table width=700 align="center">
+            
+            <tr>
+                <th width=100 class="codigo">Codigo</th>
+                <th width=60 class="cant">Cantidad</th>
+                <th>Nombre</th>
+                <th width=60 class="cant">Precio</th>
+                <th width=60 class="cant">Subtotal</th>
+            </tr>
+            {% for i in items %}
+            <tr>
+                <td width=100>{{i.cod}}</td> 
+                <td width=60 class="cant">{{i.cant|floatformat:1}}</td> 
+                <td> &nbsp;  &nbsp; &nbsp; {{i.nombre}}</td> 
+                <td width=60 class="cant">{{i.precio}}</td> 
+                <td width=60 class="cant">{{i.subtotal}}</td> 
+            </tr>
+            {%endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td width=60 class="cant"><b>Total: </b></td> 
+                <td width=60></td>
+                <td width=60 class="cant">{{total}}</td> 
+            </tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "resumen.html" %}
+{%load tags%}
+{%block contenido %}</table>
+        <h3> Consumidores Finales: </h3>
+        {% include "snippets/mostrar_venta_menorista.html" with nombre="Consumidor Final" lista=cf total=ctotal  %}
+<br />
+<hr/>
+        <table width=700 align="center">
+            <tr>
+                <th width=100 style="text-align:left;"> Codigo </th>
+                <th style="text-align:center;"> Cliente (C.I. o RUC)</th>
+                <th width=100 style="text-align:right;"> Valor </th>
+            </tr>
+        </table>
+        {% include "snippets/mostrar_venta.html" with nombre="Clientes" ordenes=otros total=ototal  %}
+        {% include "snippets/mostrar_venta.html" with nombre="Eliminados" ordenes=borrados total=btotal  %}
+<p>
+    Total de venta = {{ctotal}} + {{ototal}} = {{gtotal}} 
+</p>
+<p>
+    Total neto: {{neto}} 
+</p>
+<p>
+    Total IVA: {{iva}} 
+</p>
+{%endblock %}

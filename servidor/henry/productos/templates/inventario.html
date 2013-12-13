@@ -1,0 +1,44 @@
+
+<html>
+    <head>
+        <title>Inventario</title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+        </style>
+    </head>
+    <body align="center">
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <table width=1200 align="center">
+            <tr><td colspan=3 style="{text-align:center;font-family:'Arial'}"><b>{{nombre}}</b></td>
+
+            <tr>
+                <th width=100 style="text-align:left;"> CATEG </th>
+                <th width=100 style="text-align:left;"> BODEGA </th>
+                <th width=100 style="text-align:left;"> CODIGO </th>
+                <th style="text-align:left;"> PRODUCTO </th>
+                <th style="text-align:right;" width=100> PRECIO </th>
+                <th style="text-align:right;" width=100> PRECIO 2</th>
+                <th style="text-align:right;" width=100> Cant Mayorista</th>
+            </tr>
+            {% if not ordenes %}
+            <tr><td colspan=4 style="{text-align:center;}"> NO HAY </td> </tr>
+            {%endif%}
+
+            {% for x in ordenes %}
+            <tr>
+                <td width=100 > {{x.prod.categoria}} </td>
+                <td width=100 > {{x.bodega.nombre}} </td>
+                <td width=100 > {{x.prod_id}} </td>
+                <td style="text-align:left;"> {{x.prod}} </td>
+                <td style="text-align:right;"> {{x.precio}} </td>
+                <td style="text-align:right;"> {{x.precio2}} </td>
+                <td style="text-align:right;"> {{x.cant_mayorista|default:""}} </td>
+            </tr>
+            {%endfor %}
+        </table>
+    </body>
+</html>

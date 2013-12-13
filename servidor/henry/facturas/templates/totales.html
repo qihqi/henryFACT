@@ -1,0 +1,17 @@
+
+
+<table width=900>
+    {%for t in totales%}
+    <tr> 
+        <th width=100> {{t.user}} </th> 
+        <th width=100> Efectivo: </th> 
+        <td width=100> {{t.etotal}} </td>
+        <th width=100> Cheque: </th> 
+        <td width=100> {{t.ctotal}} </td>
+        <th width=100> Deposito: </th> 
+        <td width=100> {{t.dtotal}} </td>
+        <th width=100> Credito: </th> 
+        <td width=100> {{t.rtotal}} </td>
+    </tr>
+    {%endfor%}
+</table>

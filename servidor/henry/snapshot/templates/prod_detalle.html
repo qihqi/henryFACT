@@ -1,0 +1,45 @@
+<style>
+    td { text-align:center;}
+</style>
+<form action="{{action}}" method="get" />
+ 日期： 从
+    <input name="desde" value="{{desde}}" />
+    到
+    <input name="hasta" value="{{hasta}}" />
+    <input type="submit" value="确定" />
+</form>
+
+<h3> 品名： {{prod.nombre}} </h3>
+<h3> 仓库： {{bodega.nombre}} </h3>
+<table width=1000>
+    <tr>
+        <th>日期</th>
+        <th>销量</th>
+        <th>平均销量</th>
+        <th>销售额</th>
+        <th>平均销售额</th>
+        <th>价格</th>
+        <th>价格2</th>
+        <th>平均价格</th>
+        <th>库存</th>
+    </tr>
+{% for x in items %}
+    <tr>
+        <td>{{ x.fecha.isoformat }}</td>
+        <td> {{ x.venta_cant }}</td>
+        <td> {{ x.avg_venta_cant }}</td>
+        <td>{{  x.venta_valor}} </td>
+        <td>{{  x.avg_venta_valor}} </td>
+        <td>{{  x.precio }}</td>
+        <td>{{  x.precio2 }}</td>
+        <td>{{  x.avg_precio }}</td>
+        <td>{{  x.cant }}</td>
+    </tr>
+{%endfor%} 
+</table>
+<p>  销售额,时间
+<img src="/r/snapshot/image_cant/{{prod.codigo}}/{{bodega.id}}/{{desde}}/{{hasta}}/venta_valor" />
+</p>
+<p>  销量,时间
+<img src="/r/snapshot/image_cant/{{prod.codigo}}/{{bodega.id}}/{{desde}}/{{hasta}}/venta_cant" />
+</p>

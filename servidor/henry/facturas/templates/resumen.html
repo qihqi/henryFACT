@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Resumen</title>
+        <style>
+            body {
+                text-align : center;
+            }
+            td {font-size: 10;}
+        </style>
+    </head>
+    <body align="center">
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <h2>{{bodega}}</h2>
+        <h4>Vendido por {{vendedor}} : {{desde}} / {{hasta}} </h4>
+        {%block contenido %}
+        <table width=700 align="center">
+            <tr>
+                <th width=100 style="text-align:left;"> Codigo </th>
+                <th style="text-align:center;"> Cliente </th>
+                <th width=100 style="text-align:right;"> Valor </th>
+            </tr>
+        </table>
+        <hr />
+        {%if efectivos%}
+        {% include "snippets/mostrar_venta.html" with nombre="EFECTIVO" ordenes=efectivos total=etotal  %}
+        <hr />
+        {%endif%}
+        {%if cheques%}
+        {% include "snippets/mostrar_venta.html" with nombre=" CHEQUE" ordenes=cheques total=ctotal  %}
+        <hr />
+        {%endif%}
+        {%if depositos%}
+        {% include "snippets/mostrar_venta.html" with nombre="DEPOSITO" ordenes=depositos total=ttotal  %}
+        <hr />
+        {%endif%}
+        {%if creditos%}
+        {% include "snippets/mostrar_venta.html" with nombre="CREDITO" ordenes=creditos total=rtotal  %}
+        <hr />
+        {%endif%}
+
+        {%if varios%}
+        {% include "snippets/mostrar_venta.html" with nombre="VARIOS" ordenes=varios total=vtotal var='h' %}
+        <hr />
+        {%endif%}
+        {% include "snippets/mostrar_venta.html" with nombre="ELIMINADOS" ordenes=borrados total=btotal  %}
+        
+        <b> Gran Total: </b> 
+        {% if etotal > 0 %}   
+            {{etotal}}  
+        {%endif%}
+        {% if ctotal > 0 %}   
+            +{{ctotal}}   
+        {%endif%}
+        {% if ttotal > 0 %}   
+            +{{ttotal}}  
+        {%endif%}
+        {% if rtotal > 0 %}   
+            +{{rtotal}} 
+        {%endif%}
+        {% if vtotal > 0 %}   
+            +{{vtotal}}
+        {%endif%}
+        = <b>{{gran_total}}</b> <br/>
+        <b> Total Neto: </b> {{total_neto}} 
+        {%endblock%}
+    </body>
+</html>

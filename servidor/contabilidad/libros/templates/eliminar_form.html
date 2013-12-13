@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <style>
+            body {
+                text-align:center;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="{{action}}" method="post" >
+            <p>Esta seguro de eliminar el record {{record.ref_full}} ? </p>
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{record.id}}" />
+            <input type="hidden" name="next" value="{{next}}" />
+            <input type="submit" name="action" value="Aceptar" />
+            <input type="submit" name="action" value="Cancelar" />
+        </form>
+    </body>
+</html>

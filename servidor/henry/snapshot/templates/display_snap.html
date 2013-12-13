@@ -1,0 +1,23 @@
+
+<h3>{{name}}</h3>
+<table align=center width=1000>
+        <tr>
+            <th>货号</th>
+            <th>品名</th>
+            <th>数量</th>
+            <th>销售量</th>
+            <th>进货量</th>
+            <th>销售额</th>
+        </tr>
+    {% for x in items %}
+        <tr>
+            <td>{{x.prod_id}}</td>
+            <td>{{x.prod.nombre}}</td>
+            <td>{{x.cant|floatformat:-3}}</td>
+            <td>{{x.venta_cant|floatformat:-3}}</td>
+            <td>{{x.ingreso_cant|floatformat:-3}}</td>
+            <td>{{x.venta_valor}}</td>
+            <td><a href="/r/snapshot/hist/{{x.prod_id}}/{{x.bodega_id}}">详细</a></td>
+        </tr>
+    {%endfor %}
+</table>

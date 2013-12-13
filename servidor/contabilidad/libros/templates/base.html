@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title> {%block title %} {%endblock %} </title>
+        <style>
+            .menu { 
+                float : left;
+                width : 300px;
+                border-right-color : black;
+                border-right-width : 3px;
+            }
+            .content { float : center;   };
+
+        </style>
+    </head>
+    <body>
+        <div class="menu">
+        {% block menu %}
+        <ul>
+            <li><a href="/c/contab/create_cuenta"> Crear Cuenta </a> </li>
+            <li><a href="/c/contab/ver_cuenta"> Editar Cuenta </a> </li>
+            <li><a href="/c/contab/create_record"> Crear Record </a> </li>
+            <li><a href="/c/contab/ver_diario_form">Ver Libro Diario </a></li>
+            <li><a href="/c/contab/ver_mayor_form">Ver Libro Mayor </a></li>
+        </ul>
+        {%endblock %}
+        </div>
+        <div class="content">
+        {% block content %}
+        {% endblock %}
+        </div>
+    </body>
+</html>

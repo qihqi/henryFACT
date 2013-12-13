@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title> Ingresos : {{ingreso.bodega}} </title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+            .cant {
+                text-align: right; 
+            }
+            .codigo {
+                text-align: left; 
+            }
+            
+        </style>
+    </head>
+
+    <body>
+        {% block header %}
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <h3>
+            {% if trans %}
+            Transferencia: {{ingreso.bodega_desde}} a
+            {%else%}
+            Ingresos :
+            {%endif%}
+            {{ingreso.bodega}}  </h3>
+	<h4> Codigo: {{ingreso.id}}</h4>
+        <table align="center" width=600>
+            <tr>
+                <th width=150>Ingresado por:</th>
+                <td width=200>{{ingreso.usuario.username}}</td> 
+                <th width=100>Fecha</th>
+                <td>{{ingreso.fecha}}</td> 
+            </tr>
+        </table>
+        {%endblock%}
+        <!--items-->
+        <br />
+        <hr />
+        <table width=600 align="center">
+            
+            <tr>
+                <th width=100 class="codigo">Codigo</th>
+                <th>Nombre</th>
+                <th width=100 class="cant">Cantidad</th>
+            </tr>
+            {% for i in items %}
+            <tr>
+                <td width=100>{{i.producto.codigo}}</td> 
+                <td>{{i.producto.nombre}}</td> 
+                <td width=100 class="cant">{{i.rounded_cant}}</td> 
+            </tr>
+            {%endfor %}
+        </table>
+    </body>
+</html>

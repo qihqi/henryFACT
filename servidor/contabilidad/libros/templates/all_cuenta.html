@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{%block content %}
+    <table>
+        {%for i in query %}
+        <tr>
+            <td>
+                {{i.codigo}}
+            </td>
+            <td>
+                {{i.nombre}}
+            </td>
+            <td>
+                <a href="/c/contab/editar_cuenta?codigo={{i.codigo}}">editar</a>
+            </td>
+        </tr>
+        {%endfor%}
+    </table>
+{%endblock%}

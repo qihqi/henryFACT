@@ -1,0 +1,19 @@
+<head>
+<style>
+    td {text-align:center;}
+</style>
+</head>
+<body style="text-align:center;">
+<form action="{{action}}" method="get" >
+    <label for="cantidad">数量： <input name="number" />
+        <input type="submit" value="确定" />
+    </label>
+ 日期： 
+    <input name="fecha" value="{{desde}}" />
+</form>
+
+{% include "display_snap.html" with name="商店 花" items=flores_alm %}
+{% include "display_snap.html" with name="商店 狗牙" items=bisu_alm %}
+{% include "display_snap.html" with name="批发 花" items=flores_bod %}
+{% include "display_snap.html" with name="批发 狗牙" items=bisu_bod %}
+</body>

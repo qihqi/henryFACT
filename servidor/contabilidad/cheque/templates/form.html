@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+{%block content%}
+<p> {{msg|default:''}} </p>
+<form method="{{method|default:"post"}}" action="{{action}}">
+    {%if method != "get" %}
+    {% csrf_token %}
+    {%endif%}
+    <table>
+        {{form.as_table}}
+        <tr><td>
+        <input type="submit" name="submit" value="Aceptar" />
+        </td>
+        <td>
+        <input type="submit" name="submit" value="Cancelar" />
+        </td></tr>
+        {% if next %}
+        <input type="hidden" name="next" value="{{next}}"/>
+        {% endif %}
+    </table>
+</form>
+{%endblock%}

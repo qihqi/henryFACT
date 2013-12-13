@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title> {%block title %} {%endblock %} </title>
+        <style>
+            .menu { 
+                float : left;
+                width : 300px;
+                border-right-color : black;
+                border-right-width : 3px;
+                height:100%;
+            }
+            .content { float : center;   };
+
+        </style>
+    {%block script %}
+    {%endblock%}
+    </head>
+    <body>
+        <div class="menu">
+        {% block menu %}
+            <ul>
+                <li> Productos                 
+                    <ul>
+                    <li> <a href="/r/producto/create" > Nuevos Productos </a> </li>
+                    <!--li> <a href="/r/producto/createbodega" > Crear Bodega </a> </li-->
+                    <li> <a href="/r/producto/ver" > Ver Productos </a> </li>
+                    <li> <a href="/r/producto/ingreso" > Ingresos </a> </li>
+                    <li> <a href="/r/producto/transferencia" > Transferencia Interna </a> </li>
+                    <li> <a href="/r/producto/transferencia_externa" > Transferencia Externa </a> </li>
+                    <li> <a href="/r/producto/postear_form" >Postear Transferencia</a> </li>
+                    <li> <a href="/r/producto/reenviar" >Reenviar Transferencia</a> </li>
+                    <li> <a href="/r/producto/mod_precio" > Modificar Producto </a> </li>
+                    <li> <a href="/r/snapshot/revision" >Revisar Inventario</a> </li>
+                    </ul>
+                </li>
+
+                <li> Reempaque 
+                    <ul>
+                    <li> <a href="/r/producto/create_regla"> Crear Reglas </a> </li>    
+                    <li> <a href="/r/producto/ver_reglas_form">Ver Reglas de Reempaque </a> </li>    
+                    <li> <a href="/r/producto/reempaque">Reempaque </a> </li>    
+                    </ul>
+                </li>
+                <li> Clientes 
+                    <ul>
+                    <li> <a href="/r/cliente/create"> Crear Clientes </a> </li>    
+                    <li> <a href="/r/cliente/search"> Buscar Clientes </a> </li>    
+                    </ul>
+                </li>
+                <li> Facturacion
+                    <ul>
+                        <li> <a href="/r/ventas/resumen"> Resumen de Venta </a></li>
+                        <li> <a href="/r/ventas/eliminar"> Eliminar Factura</a></li>
+                        <li> <a href="/r/ventas/ver_totales"> Resumen General</a></li>
+                    </ul>
+                </li>
+                <li> Administrativo
+                    <ul>
+                        <li> <a href="/r/sequencia">Cambiar Sequencia</a></li>
+                        <li> <a href="/r/ventas/ver_doc">Ver Documentos</a></li>
+                        <li> <a href="/r/createuser">Crear Usuario</a></li>
+                        <li> <a href="/r/producto/mod_prod">Modificar Inventario</a></li>
+                    </ul>
+                </li>
+        </ul>
+        {%endblock %}
+        </div>
+        <div class="content">
+        {% block content %}
+        {% endblock %}
+        </div>
+    </body>
+</html>

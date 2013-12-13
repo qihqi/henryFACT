@@ -1,0 +1,25 @@
+{%load tags%}
+<table align=center width=700>
+    <tr>
+        <th> CODIGO</th>
+        <th > VALOR </th>
+        <th> CODIGO</th>
+        <th > VALOR </th>
+        <th> CODIGO</th>
+        <th > VALOR </th>
+    </tr>
+    {% for l, l2, l3 in lista %}
+    <tr>
+        <td style="text-align:center"> {{l.codigo|absolute}}</td>
+        <td style="text-align:right"> {{l.total}}</td>
+        <td style="text-align:center"> {{l2.codigo|absolute}}</td>
+        <td style="text-align:right"> {{l2.total}}</td>
+        <td style="text-align:center"> {{l3.codigo|absolute}}</td>
+        <td style="text-align:right"> {{l3.total}}</td>
+    </tr>
+    {%endfor%}
+    <tr>
+        <th colspan=6> TOTAL : {{total}}</th>
+    </tr>
+
+</table>

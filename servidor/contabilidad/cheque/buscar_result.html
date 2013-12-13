@@ -1,0 +1,99 @@
+<html>
+    <head> 
+        <style>
+            body {
+                text-align : center;
+            }
+            .centro {
+                text-align:center;
+            }
+            .right {
+                text-align:right;
+            }
+        </style>
+        <title> 
+            {% if ingresado %}
+            Cheques ingresados        
+            {% else %}
+            Cheques Deposito  
+            {%endif%}
+        </title>
+    </head> 
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/c/cheque';" > Regresar al principio </button>
+        <h3> 
+            {% if ingresado %}
+            Cheques ingresados en {{fecha}}
+            {% else %}
+            Cheques Deposito en {{fecha}}
+            {%endif%}
+        </h3>
+        
+            {% if not ingresado %}
+            <form action="/c/cheque/depositar" method="post">
+            {%csrf_token%}
+            {%endif%}
+        <table width=1000 align="center">
+            <tr>
+                <th>Banco</th>
+                <th>Cuenta</th>
+                <th>Numero</th>
+                <th>Titular</th>
+                <th>Valor</th>
+                <th>
+                Fecha 
+                {% if ingresado %}
+                    para depositar
+                {% else %}
+                    ingresado
+                {%endif%}
+                    
+                </th>
+                <th>
+                {% if ingresado %}
+                Editar
+                {% else %}
+                Deposito en
+                {%endif%}
+                </th>
+                
+            </tr>
+            {%for c in cheques %}
+            <tr>
+                <td class="centro">{{c.banco}}</td>
+                <td class="centro">{{c.cuenta}}</td>
+                <td class="right">{{c.numero}}</td>
+                <td class="centro">
+                    {{c.titular}}
+                </td>
+                <td class="right">
+                    {{c.valor}}
+                </td>
+                <td class="centro">
+                {% if ingresado %}
+                    {{c.fecha.isoformat}}
+                {% else %}
+                    {{c.fecha_ingreso.isoformat}}
+                {%endif%}
+                </td>
+                <td class="centro"> 
+                {% if ingresado %}
+                <a href="c/cheque/editar/{{c.id}}?next={{next}}">Editar</a>
+                <a href="c/cheque/eliminar/{{c.id}}?next={{next}}">Eliminar</a>
+                {% else %}
+                    <input name="cheque" value={{c.id}} type="hidden"/>
+                    {%include "cuenta_options.html" with cuentas=cuentas%}
+                {%endif%}
+                </td>
+            </tr>
+            {%endfor %} 
+        </table>
+        <br/>
+        <p> <b> Total: {{total}} </b></p>
+        {% if not ingresado %}
+            <input type="submit" value="Guardar" />
+        </form>
+        {%endif%}
+    </body>
+</html>

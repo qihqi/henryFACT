@@ -1,0 +1,61 @@
+<html>
+{% load tags%}
+    <head> 
+        <style>
+            body {
+                text-align : center;
+            }
+            .centro {
+                text-align:center;
+            }
+            .right {
+               text-align:right;
+            }
+        </style>
+        <title> Libro Mayor </title>
+    </head> 
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/c/contab';" > Regresar al principio </button>
+        <h2> QUINAL S.A. </h2>
+        <h3> Libro Mayor de Transaciones </h3>
+        <h3> CUENTA: {{records.0.cuenta.nombre}}  CODIGO: {{records.0.cuenta.codigo}} </h3>
+
+        <table width=1000 align="center" border=1px>
+            <tr>
+                <th>Fecha</th>
+                <th>Referencia <br/> Comprobante</th>
+                <th>Detalles de las Transacciones</th>
+                <th>Debitos</th>
+                <th>Creditos</th>
+            </tr>
+            {%for c in records %}
+            <tr>
+                <td class="centro">{{c.fecha.isoformat}}</td>
+                <td class="centro">{{c.cuenta_id}}</td>
+                <td>{{c.cuenta.nombre}}</td>
+                <td class="right">
+                    {%if c.valor < 0 %}
+                        {{c.valor|absolute}}
+                    {%endif%}
+                </td>
+                <td class="right">
+                    {%if c.valor > 0 %}
+                        {{c.valor|absolute}}
+                    {%endif%}
+                </td>
+                <td class="centro">{{c.ref_full}}</td>
+            </tr>
+            {%endfor %} 
+
+        </table>
+        <p>
+            <b> SALDOS: </b> 
+            {% if sign %}
+            Acreedor: {{total}}
+            {%else%}
+            Deudor: {{total}}
+            {%endif%}
+        </p>
+    </body>
+</html>

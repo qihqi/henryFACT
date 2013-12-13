@@ -1,0 +1,70 @@
+
+<html>
+    <head> 
+        <style>
+            body {
+                text-align : center;
+            }
+            .centro {
+                text-align:center;
+            }
+            .right {
+                text-align:right;
+            }
+        </style>
+        <title> 
+            DEPOSITADOS
+        </title>
+    </head> 
+    <body>
+        <button onClick="window.print();" > 打印 </button>
+        <button onClick="window.location='/c/cheque';" > 返回 </button>
+        <h3> 
+              支票
+        </h3>
+        
+        <table width=1000 align="center">
+            <tr>
+                <th> 银行</th>
+                <th> 帐号</th>
+                <th> 支票号</th>
+                <th>客户</th>
+                <th>金额</th>
+                <th>
+                    购货日期 
+                </th>
+                <th>
+                     存款日期 
+                </th>
+                <th>
+                     存入
+                </th>
+                
+            </tr>
+            {%for c in query %}
+            <tr>
+                <td class="centro">{{c.banco}}</td>
+                <td class="centro">{{c.cuenta}}</td>
+                <td class="right">{{c.numero}}</td>
+                <td class="centro">
+                    {{c.titular}}
+                </td>
+                <td class="right">
+                    {{c.valor}}
+                </td>
+                <td class="centro">
+                    {{c.fecha_ingreso.isoformat}}
+                </td>
+                <td class="centro">
+                    {{c.fecha.isoformat}}
+                </td>
+                <td class="centro"> 
+                    {{c.depositado_en.nombre}}
+                </td>
+            </tr>
+            {%endfor %} 
+        </table>
+        <br/>
+        <p> <b> 总金额: {{total}} </b></p>
+    </body>
+</html>

@@ -1,0 +1,15 @@
+
+<table border="1px">
+    <tr>
+        <th width="200"> Usuario </td>
+        <th width="200"> Bodega Autorizado </td>
+        <th width="100"> Seguencia </td>
+    </tr>
+    {% for v in config%}
+    <tr>
+        <td width="200"> {{v.username}} </td>
+        <td width="200"> {{v.bodega_factura}} </td>
+        <td width="100"> {{v.last_factura}} </td>
+    </tr>
+    {% endfor %}
+</table>

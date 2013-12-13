@@ -1,0 +1,76 @@
+<html>
+    <head> 
+        <style>
+            body {
+                text-align : center;
+            }
+            .centro {
+                text-align:center;
+            }
+            .right {
+                text-align:right;
+            }
+        </style>
+        <title> 
+            Cheques 
+        </title>
+    </head> 
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/c/cheque';" > Regresar al principio </button>
+        <h3> 
+            Cheques 
+        </h3>
+        
+        <table width=1000 align="center">
+            <tr>
+                <th>Banco</th>
+                <th>Cuenta</th>
+                <th>Numero</th>
+                <th>Titular</th>
+                <th>Valor</th>
+                <th>
+                Fecha 
+                    para depositar
+                </th>
+                <th>
+                   Fecha ingresado
+                    
+                </th>
+                <th>
+                Editar
+                </th>
+                
+            </tr>
+            {%for c in cheques %}
+            <tr>
+                <td class="centro">{{c.banco}}</td>
+                <td class="centro">{{c.cuenta}}</td>
+                <td class="right">{{c.numero}}</td>
+                <td class="centro">
+                    {{c.titular}}
+                </td>
+                <td class="right">
+                    {{c.valor}}
+                </td>
+                <td class="centro">
+                    {{c.fecha.isoformat}}
+                </td>
+                <td class="centro">
+                    {{c.fecha_ingreso.isoformat}}
+                </td>
+                <td class="centro"> 
+                <a href="c/cheque/editar/{{c.id}}?next={{next}}">Editar</a>
+                <a href="c/cheque/eliminar/{{c.id}}?next={{next}}">Eliminar</a>
+                </td>
+            </tr>
+            {%endfor %} 
+        </table>
+        <br/>
+        <p> <b> Total: {{total}} </b></p>
+        {% if not ingresado %}
+            <input type="submit" value="Guardar" />
+        </form>
+        {%endif%}
+    </body>
+</html>

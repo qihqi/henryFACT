@@ -1,0 +1,20 @@
+<html>
+<head>
+    <style>
+        tr { text-align: center;}
+    </style>
+</head>
+<body style="text-align:center;">
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+<h2> Revision de inventario: {{fecha}} </h2>
+    {% include "mostrar_revision.html" with nombre="FLORES-ALMACEN" items=flores_alm %}
+    {% include "mostrar_revision.html" with nombre="BISUTERIA-ALMACEN" items=bisu_alm %}
+    {% include "mostrar_revision.html" with nombre="FLORES-BODEGA" items=flores_bod %}
+    {% include "mostrar_revision.html" with nombre="BISUTERIA-BODEGA" items=bisu_bod %}
+    <hr/>
+
+    <p> Revisado por: ________________________ </p>
+    <p> Fecha:        ________________________ </p>
+</body>
+</html>

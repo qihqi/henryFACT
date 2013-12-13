@@ -1,0 +1,7 @@
+<form method="post" action="{{action}}">
+    {%csrf_token%}
+    <p> Seguro que desea eliminar cliente {{cliente}} ?</p>
+    <input type="hidden" name="codigo" value="{{codigo}}"/>
+    <input type="submit" name="action" value="Aceptar" />
+    <input type="submit" name="action" value="Cancelar" />
+</form>

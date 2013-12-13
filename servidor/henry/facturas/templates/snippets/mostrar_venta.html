@@ -1,0 +1,35 @@
+{%load tags%}
+<table width=700 align="center">
+    <tr><td colspan=3 style="{text-align:center;font-family:'Arial'}"><b>{{nombre}}</b></td>
+
+    {% if not ordenes %}
+        <tr><td colspan=3 style="{text-align:center;}"> NO HAY </td> 
+    {%endif%}
+
+    {% for x in ordenes %}
+        <tr>
+            <td width=100 > {{x.codigo|absolute}} </td>
+            <td style="text-align:center;"> {{x.cliente.full}} </td>
+            <td style="text-align:right;" width=100> {{x.total}} </td>
+        </tr>
+        {% if var%}
+        {% for i in 4|get_range%}
+        <tr>
+            <td width=100 ></td>
+            <td style="text-align:right;"> 
+                <div style="font:8;font-weight:bold" >
+        {%cycle '现金 efectivo: ' ' 支票 cheque: ' '存款deposito: ' '赊账credito: '%} 
+                </div>
+            </td>
+            <td style="text-align:right;" width=100>  </td>
+        </tr>
+        {%endfor%}
+        {% endif%}
+    {%endfor %}
+        <!--total -->
+        <tr>
+            <td>  </td>
+            <td style="text-align:right;"><b>Total:</b> </td>
+            <td style="text-align:right;"><b> {{total}}</b> </td>
+        </tr>
+</table>

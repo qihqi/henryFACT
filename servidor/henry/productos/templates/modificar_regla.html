@@ -1,0 +1,12 @@
+
+<h2> Modificar Reglas </h2>
+
+<form action={{action}} method="post" >
+<input name="codigo" value="{{codigo}}" type="hidden" />
+<input name="next" value="{%autoescape off%}{{next}}{%endautoescape%}" type="hidden" />
+{%csrf_token%}
+<p> Un <i> {{prod.origin.nombre}}</i><b> ({{prod.origin_id}}) </b>
+    equivale a <input name="mult" value="{{prod.multiplier}}"> <i>{{prod.dest.nombre}} </i><b> ({{prod.dest_id}})</b>
+<input name="action" value="Aceptar" type="submit" />
+<input name="action" value="Cancelar" type="submit" />
+</form>

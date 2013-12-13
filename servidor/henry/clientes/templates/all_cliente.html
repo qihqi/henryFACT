@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title> Clientes </title>
+        <style>
+
+            body {
+                text-align : center;
+            }
+            .cant {
+                text-align: right; 
+            }
+            .codigo {
+                text-align: left; 
+            }
+            
+        </style>
+    </head>
+
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <form action={{action}} method="get">
+            {{form.as_p}}
+            <input type="submit" value="Buscar"/>
+        </form>
+        <table width=1200 align="center">
+            
+            <tr>
+                <th width=100 class="codigo">RUC</th>
+                <th width=250>Apellidos</th>
+                <th width=250>Nombres</th>
+                <th>Direccion</th>
+                <th width=100 >Telefono</th>
+                <th >Modificar</th>
+            </tr>
+            {% for i in clientes %}
+            {% include "display_client.html" with client=i%}
+            {%endfor %}
+        </table>
+    </body>
+</html>
