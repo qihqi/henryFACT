@@ -10,6 +10,7 @@
         <tr>
             <td width=100 > {{x.codigo|absolute}} </td>
             <td style="text-align:center;"> {{x.cliente.full}} </td>
+            <td style="text-align:right;" width=100> {{x.total|get_valor_neto}} </td>
             <td style="text-align:right;" width=100> {{x.total}} </td>
         </tr>
         {% if var%}
@@ -30,6 +31,7 @@
         <tr>
             <td>  </td>
             <td style="text-align:right;"><b>Total:</b> </td>
+            <td style="text-align:right;"><b>{{total|get_valor_neto_string}}</b> </td>
             <td style="text-align:right;"><b> {{total}}</b> </td>
         </tr>
 </table>
