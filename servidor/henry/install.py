@@ -11,7 +11,7 @@ def main():
     static_path = os.environ['STATIC_ROOT']
     static_path = os.path.join(static_path, APP_NAME)
 
-    from_dp_path = os.path.realpath(__file__)
+    from_dp_path = os.path.dirname(os.path.realpath(__file__))
     from_static_path = os.path.join(from_dp_path, STATIC)
 
     backup_dir(from_dp_path, deploy_path)

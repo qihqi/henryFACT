@@ -130,5 +130,7 @@ server {
 		uwsgi_pass  unix:///tmp/contabilidad.sock;
 		include     uwsgi_params;
 	}
-
+	location / {
+		root /var/www;
+	}		
 }
