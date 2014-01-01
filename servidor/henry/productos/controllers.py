@@ -27,7 +27,10 @@ def masProd(bodega,  delta, codigo):
     modificarCantidad(bodega,positive(delta), codigo)
 
 def modificarCantidad(bodega,  delta, codigo):
-    print 'called', bodega.id, delta, codigo
+    try:
+        print 'called', bodega.id, delta, codigo
+    except Exception:
+        pass
     cont = Contenido.objects.get(bodega=bodega, prod_id=codigo)
     cont.cant += delta
     cont.save()
