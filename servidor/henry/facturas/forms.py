@@ -13,6 +13,7 @@ class ResumenForm(forms.Form):
     hasta = forms.DateField(initial=date.today())
     bodega = forms.ChoiceField(choices=())
     vendido_por = forms.ChoiceField(choices=())
+    condensado = forms.BooleanField(required=False)
 
 class EliminarForm(forms.Form):
     def __init__(self, *args, **kwargs):

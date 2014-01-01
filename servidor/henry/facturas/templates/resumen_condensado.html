@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>Resumen</title>
+    <style>
+        body {
+        text-align : center;
+        }
+        td {font-size: 10;}
+    </style>
+</head>
+<body align="center">
+<button onClick="window.print();" > Imprimir </button>
+<button onClick="window.location='/r';" > Regresar al principio </button>
+<h2>{{bodega}}</h2>
+<h4>{{desde}} / {{hasta}} </h4>
+{%block contenido %}
+<table width=700 align="center">
+    <tr>
+        <th width=100 style="text-align:left;"> RUC </th>
+        <th width=300 style="text-align:left;"> Cliente </th>
+        <th style="text-align:center;"> Numeros de Factura </th>
+        <th width=100 style="text-align:right;"> Valor Total </th>
+        <th width=100 style="text-align:right;"> IVA Total </th>
+    </tr>
+    {% for x in validos %}
+    <tr>
+        <td>{{x.ruc}}</td>
+        <td>{{x.cliente}}</td>
+        <td style="text-align:right;">{{x.total_orden}}</td>
+        <td style="text-align:right;">{{x.total}}</td>
+        <td style="text-align:right;">{{x.total_iva}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{%endblock%}
+</body>
+</html>

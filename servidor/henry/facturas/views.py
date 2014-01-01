@@ -1,56 +1,62 @@
+import functools
+from decimal import Decimal
+
+from django.template import RequestContext
+from django.shortcuts import render_to_response
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import user_passes_test
+
 from facturas.forms import *
-from main.models import UserJava
 from main.views import my_login_required
 from main.helper import render_form
 from main.models import *
-from datetime import date
 from facturas.models import *
 from productos.models import *
 from productos.views import generar_ingreso_page
 from productos.reempaque import ver_reempaque
 
-from django.db import IntegrityError, transaction
-from django.template import Context, loader, RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, redirect
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User, UserManager
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth.decorators import user_passes_test
-
-import functools
-import decimal
-from decimal import Decimal
 
 #Resumen de venta, la ventana de busqueda
 @my_login_required
 @user_passes_test(hasNivel(1), '/r/login')
 def resumen_request_page(request):
     #make an empty form
-    form = ResumenForm(initial={'desde' : date.today(), 'hasta' : date.today()})
-    meta = {'method' : 'get',
-            'form' : form,
-            'st_message' : '',
-            'action' : reverse('facturas.views.generar_resumen_page'),
-            'submit_name' : 'Buscar',
-            'title' : 'Resumen de Venta',
-           }
+    form = ResumenForm(initial={'desde': date.today(), 'hasta': date.today()})
+    meta = {'method': 'get',
+            'form': form,
+            'st_message': '',
+            'action': reverse('facturas.views.generar_resumen_page'),
+            'submit_name': 'Buscar',
+            'title': 'Resumen de Venta',
+    }
 
     return render_form(meta, RequestContext(request))
 
-def resumen_menorista(desde, hasta, vendido):
+
+def resumen_menorista(desde, hasta, vendido, condensado=False):
     resumen = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta),
                                              vendedor=UserJava(username=vendido),
                                              bodega=Bodega(1))
     validos = resumen.filter(eliminado=False)
+
+    if condensado:
+        validos = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta),
+                                                 bodega=Bodega(1),
+                                                 eliminado=False)
+        validos = resumen_condensado(validos).values()
+        return render_to_response('resumen_condensado.html', {
+            'bodega': 'ALMACEN',
+            'desde': desde,
+            'hasta': hasta,
+            'validos': validos
+        })
+
     borrados = list(resumen.filter(eliminado=True))
 
     cf = list(validos.filter(cliente_id='NA'))
     otros = list(validos.exclude(cliente_id='NA'))
 
-    ftotal = lambda n, f : n + f.total
+    ftotal = lambda n, f: n + f.total
     ctotal = reduce(ftotal, cf, 0)
     ototal = reduce(ftotal, otros, 0)
     btotal = reduce(ftotal, borrados, 0)
@@ -67,19 +73,19 @@ def resumen_menorista(desde, hasta, vendido):
     total_neto = "%.2f" % total_neto_numero
     iva = "%.2f" % (gran_total - total_neto_numero)
     return render_to_response("resumen_menorista.html",
-                             {'cf' : lista,
-                              'bodega' : 'ALMACEN',
-                              'desde' : desde.isoformat(),
-                              'hasta' : hasta.isoformat(),
-                              'vendedor' : vendido,
-                              'otros' : otros,
-                              'ctotal' : ctotal,
-                              'ototal' : ototal,
-                              'gtotal' : gran_total,
-                              'neto' : total_neto,
-                              'iva' : iva,
-                              'btotal' : btotal,
-                              'borrados' : borrados
+                              {'cf': lista,
+                               'bodega': 'ALMACEN',
+                               'desde': desde.isoformat(),
+                               'hasta': hasta.isoformat(),
+                               'vendedor': vendido,
+                               'otros': otros,
+                               'ctotal': ctotal,
+                               'ototal': ototal,
+                               'gtotal': gran_total,
+                               'neto': total_neto,
+                               'iva': iva,
+                               'btotal': btotal,
+                               'borrados': borrados
                               })
 
 
@@ -91,14 +97,14 @@ def generar_resumen_page(request):
     form = ResumenForm(request.GET)
 
     if not form.is_valid():
-        form = ResumenForm(initial={'desde' : date.today(), 'hasta' : date.today()})
-        meta = {'method' : 'get',
-                'form' : form,
-                'st_message' : 'Datos invalidos',
-                'action' : reverse('facturas.views.generar_resumen_page'),
-                'submit_name' : 'Buscar',
-                'title' : 'Resumen de Venta',
-               }
+        form = ResumenForm(initial={'desde': date.today(), 'hasta': date.today()})
+        meta = {'method': 'get',
+                'form': form,
+                'st_message': 'Datos invalidos',
+                'action': reverse('facturas.views.generar_resumen_page'),
+                'submit_name': 'Buscar',
+                'title': 'Resumen de Venta',
+        }
         return render_form(meta, RequestContext(request))
 
     desde = form.cleaned_data['desde']
@@ -112,20 +118,19 @@ def generar_resumen_page(request):
     #if nivel no alcanza, no deja:
     bod = Bodega.objects.get(id=bodega_id)
     if not hasNivel(bod.nivel + 1)(request.user):
-        form = ResumenForm(initial={'desde' : date.today(), 'hasta' : date.today()})
-        meta = {'method' : 'get',
-                'form' : form,
-                'st_message' : 'Escoja otra bodega',
-                'action' : reverse('facturas.views.generar_resumen_page'),
-                'submit_name' : 'Buscar',
-                'title' : 'Resumen de Venta',
-               }
+        form = ResumenForm(initial={'desde': date.today(), 'hasta': date.today()})
+        meta = {'method': 'get',
+                'form': form,
+                'st_message': 'Escoja otra bodega',
+                'action': reverse('facturas.views.generar_resumen_page'),
+                'submit_name': 'Buscar',
+                'title': 'Resumen de Venta',
+        }
         return render_form(meta, RequestContext(request))
 
+    condensado = form.cleaned_data['condensado']
     if bodega_id == 1:
-        return resumen_menorista(desde, hasta, vendido)
-
-
+        return resumen_menorista(desde, hasta, vendido, condensado)
 
     validos = resumen.filter(eliminado=False)
     borrados = list(resumen.filter(eliminado=True))
@@ -145,25 +150,26 @@ def generar_resumen_page(request):
     gran_total = cheque_total + efectivo_total + deposito_total + rtotal + vtotal
     total_neto = "%.2f" % (gran_total / Decimal(1.12))
     return render_to_response('resumen.html',
-                             {'cheques' : cheques,
-                              'bodega' : bodega_name,
-                              'desde' : desde.isoformat(),
-                              'hasta' : hasta.isoformat(),
-                              'vendedor' : vendido,
-                              'efectivos' : efectivos,
-                              'depositos' : depositos,
-                              'creditos' : creditos,
-                              'varios' : varios,
-                              'ctotal' : cheque_total,
-                              'etotal' : efectivo_total,
-                              'ttotal' : deposito_total,
-                              'borrados' : borrados,
-                              'btotal' : btotal,
-                              'rtotal' : rtotal,
-                              'vtotal' : vtotal,
-                              'gran_total' : gran_total,
-                              'total_neto' : total_neto
-                          })
+                              {'cheques': cheques,
+                               'bodega': bodega_name,
+                               'desde': desde.isoformat(),
+                               'hasta': hasta.isoformat(),
+                               'vendedor': vendido,
+                               'efectivos': efectivos,
+                               'depositos': depositos,
+                               'creditos': creditos,
+                               'varios': varios,
+                               'ctotal': cheque_total,
+                               'etotal': efectivo_total,
+                               'ttotal': deposito_total,
+                               'borrados': borrados,
+                               'btotal': btotal,
+                               'rtotal': rtotal,
+                               'vtotal': vtotal,
+                               'gran_total': gran_total,
+                               'total_neto': total_neto
+                              })
+
 
 @my_login_required
 @user_passes_test(hasNivel(1), '/r/login')
@@ -171,14 +177,14 @@ def ver_resumen_total(request):
     form = ResumenForm(request.GET)
     print 'total resumen'
     if not form.is_valid():
-        form = ResumenForm(initial={'desde' : date.today(), 'hasta' : date.today()})
-        meta = {'method' : 'get',
-                'form' : form,
-                'st_message' : 'Datos invalidos',
-                'action' : reverse('facturas.views.get_resumen_total'),
-                'submit_name' : 'Buscar',
-                'title' : 'Resumen de Venta',
-               }
+        form = ResumenForm(initial={'desde': date.today(), 'hasta': date.today()})
+        meta = {'method': 'get',
+                'form': form,
+                'st_message': 'Datos invalidos',
+                'action': reverse('facturas.views.get_resumen_total'),
+                'submit_name': 'Buscar',
+                'title': 'Resumen de Venta',
+        }
         return render_form(meta, RequestContext(request))
 
     desde = form.cleaned_data['desde']
@@ -191,18 +197,20 @@ def ver_resumen_total(request):
         totales.append(get_totales(user, desde, hasta, bodega))
 
     print 'i am here'
-    return render_to_response('totales.html', {'totales' :totales})
+    return render_to_response('totales.html', {'totales': totales})
+
 
 def get_totales_form(request):
-    form = ResumenForm(initial={'desde' : date.today(), 'hasta' : date.today()})
-    meta = {'method' : 'get',
-            'form' : form,
-            'st_message' : '',
-            'action' : reverse('facturas.views.ver_resumen_total'),
-            'submit_name' : 'Buscar',
-            'title' : 'Resumen de Venta',
-           }
+    form = ResumenForm(initial={'desde': date.today(), 'hasta': date.today()})
+    meta = {'method': 'get',
+            'form': form,
+            'st_message': '',
+            'action': reverse('facturas.views.ver_resumen_total'),
+            'submit_name': 'Buscar',
+            'title': 'Resumen de Venta',
+    }
     return render_form(meta, RequestContext(request))
+
 
 def get_totales(user, desde, hasta, bodega_id):
     resumen = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta),
@@ -211,9 +219,9 @@ def get_totales(user, desde, hasta, bodega_id):
     validos = resumen.filter(eliminado=False)
 
     totales = {}
-    f = lambda x,y : x + y.total
+    f = lambda x, y: x + y.total
     totales['btotal'] = reduce(f, resumen.filter(eliminado=True), 0)
-    totales['ctotal']= reduce(f, validos.filter(pago=OrdenDeDespacho.PAGO_CHEQUE), 0)
+    totales['ctotal'] = reduce(f, validos.filter(pago=OrdenDeDespacho.PAGO_CHEQUE), 0)
     totales['etotal'] = reduce(f, validos.filter(pago=OrdenDeDespacho.PAGO_EFECTIVO), 0)
     totales['dtotal'] = reduce(f, validos.filter(pago=OrdenDeDespacho.PAGO_DEPOSITO), 0)
     totales['rtotal'] = reduce(f, validos.filter(pago=OrdenDeDespacho.PAGO_CREDITO), 0)
@@ -222,17 +230,16 @@ def get_totales(user, desde, hasta, bodega_id):
     return totales
 
 
-
 @my_login_required
 #esto es para eliminar factura!
 def testPage(request):
-    meta = {'method' : 'post',
-            'form' : None,
-            'st_message' : '',
-            'action' : reverse('facturas.views.testPage'),
-            'submit_name' : 'Eliminar',
-            'title' : 'Eliminar Factura',
-           }
+    meta = {'method': 'post',
+            'form': None,
+            'st_message': '',
+            'action': reverse('facturas.views.testPage'),
+            'submit_name': 'Eliminar',
+            'title': 'Eliminar Factura',
+    }
     if request.method == 'GET':
         meta['form'] = EliminarForm()
         return render_form(meta, RequestContext(request))
@@ -263,7 +270,7 @@ def testPage(request):
             cont = Contenido.objects.get(prod=item.producto, bodega=bodega)
             cont.cant += item.cantidad
             cont.save()
-        #insertar record
+            #insertar record
         record.save()
         #mark the factura
         desp.eliminado = True
@@ -278,17 +285,17 @@ def testPage(request):
     return render_form(meta, RequestContext(request))
 
 
-
-def ver_doc_page(request, msg = ''):
+def ver_doc_page(request, msg=''):
     form = VerDocForm()
-    meta = {'method' : 'get',
-            'form' : form,
-            'st_message' : msg,
-            'action' : reverse('facturas.views.show_doc_page'),
-            'submit_name' : 'Ver',
-            'title' : 'Ver Documentos',
-           }
+    meta = {'method': 'get',
+            'form': form,
+            'st_message': msg,
+            'action': reverse('facturas.views.show_doc_page'),
+            'submit_name': 'Ver',
+            'title': 'Ver Documentos',
+    }
     return render_form(meta, None)
+
 
 def show_doc_page(request):
     form = VerDocForm(request.GET)
@@ -300,11 +307,11 @@ def show_doc_page(request):
     codigo = form.cleaned_data['codigo']
     tipo = form.cleaned_data['tipo']
     try:
-        funcs = {'nota' : functools.partial(ver_factura, nota=True),
-                 'factura' :functools.partial(ver_factura, nota=False),
-                 'ingreso' : lambda bodega,codigo : generar_ingreso_page(Ingreso.objects.get(id=codigo)),
-                 'reempaque' : lambda bodega, codigo : ver_reempaque(codigo),
-                 }
+        funcs = {'nota': functools.partial(ver_factura, nota=True),
+                 'factura': functools.partial(ver_factura, nota=False),
+                 'ingreso': lambda bodega, codigo: generar_ingreso_page(Ingreso.objects.get(id=codigo)),
+                 'reempaque': lambda bodega, codigo: ver_reempaque(codigo),
+        }
         page = funcs[tipo](bodega, codigo)
     except ObjectDoesNotExist:
         return ver_doc_page(request, 'Documento no encontrado')
@@ -312,6 +319,7 @@ def show_doc_page(request):
     if not page:
         return ver_doc_page(request, 'Documento no existe');
     return page
+
 
 class item:
     def __init__(self, cod, nombre, cant, precio):
@@ -327,8 +335,9 @@ class item:
     @property
     def subtotal(self):
         return "%.2f" % self.subtotalx
-def ver_factura(bodega, codigo, nota):
 
+
+def ver_factura(bodega, codigo, nota):
     factura = None
     items_factura = None
 
@@ -339,15 +348,42 @@ def ver_factura(bodega, codigo, nota):
         factura = OrdenDeDespacho.objects.get(codigo=codigo, bodega=bodega)
         items_factura = ItemDeDespacho.objects.filter(desp_cod=factura).order_by('num')
 
+    items = [item(i.producto.codigo, i.producto.nombre, i.cantidad, i.precio) \
+             for i in items_factura]
 
-    items = [ item(i.producto.codigo, i.producto.nombre, i.cantidad, i.precio) \
-            for i in items_factura]
+    total = "%.2f" % functools.reduce(lambda ac, it: ac + it.subtotalx, items, 0)
+    return render_to_response('ver_factura.html', {'factura': factura,
+                                                   'items': items,
+                                                   'total': total,
+                                                   'is_nota': nota})
 
-    total = "%.2f" % functools.reduce(lambda ac, it : ac + it.subtotalx, items, 0)
-    return render_to_response('ver_factura.html', {'factura' : factura,
-                                                   'items' : items,
-                                                   'total' : total,
-                                                   'is_nota' : nota})
+
+class CondensedItem(object):
+    pass
+
+
+def resumen_condensado(orden_list):
+    condensed = {}
+    for orden in orden_list:
+        if orden.cliente_id in condensed:
+            x = condensed[orden.cliente_id]
+            x.total += orden.total
+            x.total_orden += 1
+            x.total_iva += Decimal('0.12') * orden.total
+        else:
+            x = CondensedItem()
+            x.total = orden.total
+            x.total_orden = 1
+            x.ruc = orden.cliente_id
+            x.cliente = orden.cliente.fullname
+            x.total_iva = Decimal('0.12') * orden.total
+            condensed[orden.cliente_id] = x
+
+    for x in condensed.keys():
+        condensed[x].total_iva = condensed[x].total_iva.quantize(Decimal('0.01'))
+
+    return condensed
+
 
 
 
