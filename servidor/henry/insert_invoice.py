@@ -84,6 +84,8 @@ def insert_invoice(inv):
             precio_modificado=inv['precio_modificado'],
             eliminado=inv['eliminado'])
         orden.save()
+        orden.fecha = inv['fecha']
+        orden.save()
 
     x = 0
     for i in items:
