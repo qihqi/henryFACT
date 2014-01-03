@@ -19,16 +19,18 @@
         <th width=100 style="text-align:left;"> RUC </th>
         <th width=300 style="text-align:left;"> Cliente </th>
         <th style="text-align:center;"> Numeros de Factura </th>
-        <th width=100 style="text-align:right;"> Valor Total </th>
+        <th width=100 style="text-align:right;"> Valor Neto </th>
         <th width=100 style="text-align:right;"> IVA Total </th>
+        <th width=100 style="text-align:right;"> Valor Total </th>
     </tr>
     {% for x in validos %}
     <tr>
         <td>{{x.ruc}}</td>
         <td>{{x.cliente}}</td>
         <td style="text-align:right;">{{x.total_orden}}</td>
-        <td style="text-align:right;">{{x.total}}</td>
+        <td style="text-align:right;">{{x.neto}}</td>
         <td style="text-align:right;">{{x.total_iva}}</td>
+        <td style="text-align:right;">{{x.total}}</td>
     </tr>
     {% endfor %}
 </table>

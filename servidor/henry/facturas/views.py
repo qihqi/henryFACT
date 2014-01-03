@@ -369,18 +369,23 @@ def resumen_condensado(orden_list):
             x = condensed[orden.cliente_id]
             x.total += orden.total
             x.total_orden += 1
-            x.total_iva += Decimal('0.12') * orden.total
+            neto = (orden.total / Decimal('1.12'))
+            x.neto += neto
+            iva = orden.total - neto
+            x.total_iva += iva
         else:
             x = CondensedItem()
             x.total = orden.total
             x.total_orden = 1
             x.ruc = orden.cliente_id
             x.cliente = orden.cliente.fullname
-            x.total_iva = Decimal('0.12') * orden.total / Decimal('1.12')
+            x.neto = orden.total / Decimal('1.12')
+            x.total_iva = x.total - x.neto
             condensed[orden.cliente_id] = x
 
     for x in condensed.keys():
         condensed[x].total_iva = condensed[x].total_iva.quantize(Decimal('0.01'))
+        condensed[x].neto = condensed[x].neto.quantize(Decimal('0.01'))
 
     return condensed
 
