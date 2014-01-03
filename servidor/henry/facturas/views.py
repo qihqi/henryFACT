@@ -376,7 +376,7 @@ def resumen_condensado(orden_list):
             x.total_orden = 1
             x.ruc = orden.cliente_id
             x.cliente = orden.cliente.fullname
-            x.total_iva = Decimal('0.12') * orden.total
+            x.total_iva = Decimal('0.12') * orden.total / Decimal('1.12')
             condensed[orden.cliente_id] = x
 
     for x in condensed.keys():
