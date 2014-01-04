@@ -23,8 +23,9 @@ def enviar(destino, datos):
     r = requests.post(destino,
                      data={'msg' : datos, 'key' : generar_crypt(datos)})
     if r.status_code == 200:
-        return r.json['num']
-    print r.text
+        resp_map = json.loads(r.text)
+        num = resp_map.get('num')
+        return num if num else -1
     return -1
 
 SECRET_KEY = '05316900911JNHSDnojodasApurateHelenNathy' #cualquier cosa
