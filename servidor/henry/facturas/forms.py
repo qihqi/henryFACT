@@ -39,3 +39,16 @@ class VerDocForm(forms.Form):
 
             )
     tipo = forms.ChoiceField(choices=CHOICES)
+
+
+class VerVentaPorProducto(forms.Form):
+    bodega = forms.ChoiceField(choices=())
+    codigo = forms.CharField()
+    desde = forms.DateField(initial=date.today())
+    hasta = forms.DateField(initial=date.today())
+
+
+    def __init__(self, *args, **kwargs):
+        super(VerVentaPorProducto, self).__init__(*args, **kwargs)
+        self.fields['bodega'].choices = [(v.id, v.nombre) for v in Bodega.objects.all().exclude(id='-1')]
+

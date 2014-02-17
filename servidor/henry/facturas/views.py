@@ -229,6 +229,73 @@ def get_totales(user, desde, hasta, bodega_id):
     totales['user'] = user.username
     return totales
 
+# form para ver factura
+@my_login_required
+def ventas_por_productos(request):
+    meta = {'method': 'get',
+            'form': VerVentaPorProducto(),
+            'st_message': '',
+            'action': reverse('facturas.views.ventas_por_productos_detalle'),
+            'submit_name': 'Ver',
+            'title': 'Ver Ventas por Productos',
+    }
+    return render_form(meta, None)
+
+
+# form para ver factura
+@my_login_required
+def ventas_por_productos_detalle(request):
+    meta = {'method': 'get',
+            'form': VerVentaPorProducto(),
+            'st_message': '',
+            'action': reverse('facturas.views.ventas_por_productos_detalle'),
+            'submit_name': 'Ver',
+            'title': 'Ver Ventas por Productos',
+    }
+    form = VerVentaPorProducto(request.GET)
+    if not form.is_valid():
+        meta['form'] = form
+        return render_form(meta, None)
+
+
+    desde = form.cleaned_data['desde']
+    hasta = form.cleaned_data['hasta']
+    codigo = form.cleaned_data['codigo']
+    bodega_id = int(form.cleaned_data['bodega'])
+
+    if not len(Producto.objects.filter(codigo=codigo)):
+        meta['st_message'] = 'Producto %s no existe' % codigo
+        return render_form(meta, None)
+
+    all_venta_row = ItemDeDespacho.objects.filter(
+            producto_id=codigo,
+            desp_cod__fecha__gte=desde,
+            desp_cod__fecha__lte=hasta,
+            desp_cod__bodega_id=bodega_id)
+
+    grouped = {}
+    total = 0
+    for item in all_venta_row:
+        key = item.desp_cod.cliente
+        if key in grouped:
+            grouped[key] += item.cantidad
+        else:
+            grouped[key] = item.cantidad
+        total += item.cantidad
+
+    return render_to_response('ventas_por_productos_detalle.html', {
+        'total': total,
+        'items': grouped.items(),
+        'form': form,
+        'prod': Producto.objects.get(codigo=codigo),
+        'request': {
+            'desde': desde,
+            'hasta': hasta,
+            'bodega': bodega_id
+            }
+        })
+
+
 
 @my_login_required
 #esto es para eliminar factura!
@@ -388,7 +455,6 @@ def resumen_condensado(orden_list):
         condensed[x].neto = condensed[x].neto.quantize(Decimal('0.01'))
 
     return condensed
-
 
 
 

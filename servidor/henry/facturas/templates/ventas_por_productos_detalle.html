@@ -1,0 +1,43 @@
+<html>
+    <head>
+    <title> Producto: {{prod.nombre}} ({{prod.codigo}}) </title>
+    </head>
+    <body>
+        <button onClick="window.print();" > Imprimir </button>
+        <button onClick="window.location='/r';" > Regresar al principio </button>
+        <div> {{form.as_list}}</div>
+        <h2 align="center" >Producto: {{prod.nombre}} ({{prod.codigo}})</h2>
+        <table align="center" width=600>
+            <tr>
+                <th width=100>Desde</th>
+                <td>{{request.desde}}</td> 
+                <th width=100>Hasta</th>
+                <td>{{request.hasta}}</td> 
+                <th width=100>bodega</th>
+                <td> {% if bodega == 1 %} almacen {%else%} bodega {%endif%}</td> 
+            </tr>
+        </table>
+        <br />
+        <hr />
+        <table width=600 align="center">
+            <tr>
+                <th width=100>RUC</th>
+                <th>Cliente</th>
+                <th width=60>Cantidad</th>
+            </tr>
+            {% for i in items %}
+            <tr>
+                <td width=100>{{i.0.codigo}}</td> 
+                <td>&nbsp; &nbsp;{{i.0.fullname}}</td> 
+                <td>{{i.1}}</td> 
+            </tr>
+            {%endfor %}
+            <tr>
+                <td width=60 class="cant"><b>Total: </b></td> 
+                <td width=60></td>
+                <td width=60 class="cant">{{total}}</td> 
+            </tr>
+        </table>
+    </body>
+</html>
+
