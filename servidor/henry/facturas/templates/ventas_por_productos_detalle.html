@@ -21,21 +21,24 @@
         <hr />
         <table width=600 align="center">
             <tr>
-                <th width=100>RUC</th>
+                <th width=100>Fact #</th>
                 <th>Cliente</th>
+                <th>Fecha</th>
                 <th width=60>Cantidad</th>
             </tr>
             {% for i in items %}
             <tr>
-                <td width=100>{{i.0.codigo}}</td> 
-                <td>&nbsp; &nbsp;{{i.0.fullname}}</td> 
-                <td>{{i.1}}</td> 
+                <td width=100>{{i.desp_cod_id}}</td> 
+                <td>{{i.desp_cod.cliente.fullname}}</td> 
+                <td>{{i.desp_cod.fecha}}</td> 
+                <td>{{i.cantidad}}</td> 
             </tr>
             {%endfor %}
             <tr>
-                <td width=60 class="cant"><b>Total: </b></td> 
-                <td width=60></td>
-                <td width=60 class="cant">{{total}}</td> 
+                <td> </td>
+                <td> </td>
+                <td><b>Total: </b></td> 
+                <td>{{total}}</td> 
             </tr>
         </table>
     </body>

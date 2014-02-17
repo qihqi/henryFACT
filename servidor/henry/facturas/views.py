@@ -273,19 +273,11 @@ def ventas_por_productos_detalle(request):
             desp_cod__fecha__lte=hasta,
             desp_cod__bodega_id=bodega_id)
 
-    grouped = {}
-    total = 0
-    for item in all_venta_row:
-        key = item.desp_cod.cliente
-        if key in grouped:
-            grouped[key] += item.cantidad
-        else:
-            grouped[key] = item.cantidad
-        total += item.cantidad
+    total = sum((i.cantidad for i in all_venta_row))
 
     return render_to_response('ventas_por_productos_detalle.html', {
         'total': total,
-        'items': grouped.items(),
+        'items': all_venta_row,
         'form': form,
         'prod': Producto.objects.get(codigo=codigo),
         'request': {
