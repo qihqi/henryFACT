@@ -22,6 +22,7 @@
                 <th style="text-align:left;"> PRODUCTO </th>
                 <th style="text-align:right;" width=100> PRECIO </th>
                 <th style="text-align:right;" width=100> PRECIO 2</th>
+                <th style="text-align:right;" width=100> Cantidad</th>
                 <th style="text-align:right;" width=100> Cant Mayorista</th>
             </tr>
             {% if not ordenes %}
@@ -36,6 +37,7 @@
                 <td style="text-align:left;"> {{x.prod}} </td>
                 <td style="text-align:right;"> {{x.precio}} </td>
                 <td style="text-align:right;"> {{x.precio2}} </td>
+                <td style="text-align:right;"> {{x.cant|floatformat:"0"}} </td>
                 <td style="text-align:right;"> {{x.cant_mayorista|default:""}} </td>
             </tr>
             {%endfor %}
