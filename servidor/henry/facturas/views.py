@@ -40,9 +40,6 @@ def resumen_menorista(desde, hasta, vendido, condensado=False):
     validos = resumen.filter(eliminado=False)
 
     if condensado:
-        validos = OrdenDeDespacho.objects.filter(fecha__range=(desde, hasta),
-                                                 bodega=Bodega(1),
-                                                 eliminado=False)
         validos = resumen_condensado(validos).values()
         return render_to_response('resumen_condensado.html', {
             'bodega': 'ALMACEN',
