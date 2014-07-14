@@ -309,9 +309,10 @@ def testPage(request):
         user = request.user
         codigo = form.cleaned_data['no_de_factura']
         motivo = form.cleaned_data['motivo']
+        bodega_id = form.cleaned_data['bodega']
 
         #hacer un record
-        desp = OrdenDeDespacho.objects.get(codigo=codigo)
+        desp = OrdenDeDespacho.objects.get(codigo=codigo, bodega_id=bodega_id)
         if desp.eliminado:
             raise OrdenDeDespacho.DoesNotExist()
 

@@ -25,6 +25,9 @@
         {% else %}
             Factura : 
         {%endif%} {{factura.codigo}} **** Duplicado **** 
+        {%if factura.eliminado %}
+         ELIMINADO
+        {% endif %}
         </h3>
         <!-- item -->
         <table align="center" width=600>
