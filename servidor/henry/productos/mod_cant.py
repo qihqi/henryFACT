@@ -8,7 +8,7 @@ from productos.controllers import *
 from productos.api import *
 
 @my_login_required
-@user_passes_test(hasNivel(1), '/r/login')
+@user_passes_test(hasNivel(2), '/r/login')
 def mod_prod(request):
 
     if request.method == 'GET':
