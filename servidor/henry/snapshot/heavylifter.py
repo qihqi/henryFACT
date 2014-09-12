@@ -71,16 +71,16 @@ def get_full_random_revision(bodega, tipo):
         r = random.randint(a_ind, z_ind + 1)
         candidates.add(chr(r))
 
-    c= tuple(candidates)
-    thefilter = Q(prod__codigo__startswith=c[0]) | Q(prod__codigo__startswith=c[1]) | Q(prod__codigo__startswith=c[2])
-    print thefilter
-    choosen = Contenido.objects.filter(thefilter)
-    size = choosen.count()
+    all_result = []
+    for u in candidates:
+        cant = Contenido.objects.filter(prod__codigo__startswith=u)[:100]
+        all_result.extend(cant)
+    size = len(all_result)
     contenidos = set()
     while len(contenidos) < 3:
         contenidos.add(random.randint(0, size-1))
 
-    return [choosen[i] for i in contenidos]
+    return [all_result[i] for i in contenidos]
 
 
 
