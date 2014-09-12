@@ -3,6 +3,7 @@
 ## mis seetings - qh
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+NUM_BODEGAS = 2
 
 ## end - qh
 

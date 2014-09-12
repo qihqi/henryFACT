@@ -73,6 +73,7 @@ class Ingreso(models.Model):
     TIPO_REEMPAQUE = 'R'
     TIPO_EXTERNA = 'E'
     TIPO_TRANSFERENCIA = 'T'
+    TIPO_ELIMINADO = 'D'
 
     def get_related_reempaque(self):
         if self.tipo != Ingreso.TIPO_REEMPAQUE:

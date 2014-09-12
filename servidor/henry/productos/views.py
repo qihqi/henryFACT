@@ -17,6 +17,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 
 from django.core import serializers
+import settings
 
 from main.helper import render_form
 from main.views import my_login_required
@@ -83,12 +84,14 @@ def create_cat_page(request):
 @my_login_required
 def create_product_page(request):
     form = CreateProductForm()
+    num_bod = settings.NUM_BODEGAS
     meta = {'method' : 'post',
             'form' : form,
             'st_message' : '',
             'action' : reverse('productos.views.create_product_page'),
             'submit_name' : 'Crear',
             'title' : 'Crear Producto',
+            'num_bodega' : num_bod,
            }
     if request.method == 'GET':
         transaction.rollback()

@@ -4,6 +4,7 @@ from productos.models import *
 from facturas.models import *
 from django.db.models import Max
 from datetime import date
+from django.db.models import Q
 
 import random
 import itertools
@@ -29,6 +30,7 @@ def get_top_records(number, fecha, column):
 
 
 def get_revision(bodega, tipo):
+    return get_full_random_revision(bodega, tipo)
     last_fecha = Snapshot.objects.aggregate(Max('fecha'))['fecha__max']
 
     objs = Snapshot.objects.filter(bodega_id=bodega,
@@ -58,6 +60,30 @@ def get_revision(bodega, tipo):
     obj3 = objs[index3] if size_zero==0 else objs_zero[index3]
 
     return (obj1.contenido, obj2.contenido, obj3.contenido)
+
+
+def get_full_random_revision(bodega, tipo):
+    a_ind = ord('A')
+    z_ind = ord('Z')
+
+    candidates = set()
+    while len(candidates) < 3:
+        r = random.randint(a_ind, z_ind + 1)
+        candidates.add(chr(r))
+
+    c= tuple(candidates)
+    thefilter = Q(prod__codigo__startswith=c[0]) | Q(prod__codigo__startswith=c[1]) | Q(prod__codigo__startswith=c[2])
+    print thefilter
+    choosen = Contenido.objects.filter(thefilter)
+    size = choosen.count()
+    contenidos = set()
+    while len(contenidos) < 3:
+        contenidos.add(random.randint(0, size-1))
+
+    return [choosen[i] for i in contenidos]
+
+
+
 
 #------------------------------------------------------------------------------------
 def update_record():
