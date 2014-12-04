@@ -16,10 +16,27 @@ from clientes.models import *
 
 @my_login_required
 def create_client_page(request):
+
+    #hack - add js to validate id numbers
+    st_message = '''
+    <script type="text/javascript" src="/static/jquery-1.7.2.js" ></script>
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function(event) {
+                var id = $('#id_codigo').val();
+                if (isNaN(id) || id.length != 10 || id.length!=13) {
+                    alert("numero de cedula debe ser 10 digitos de numero, RUC debe ser 13 digitos de numero, si espacio o '-'");
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+    '''
+
     form = CreateClientForm()
     meta = {'method' : 'post',
             'form' : form,
-            'st_message' : '',
+            'st_message' : st_message,
             'action' : reverse('clientes.views.create_client_page'),
             'submit_name' : 'Crear',
             'title' : 'Crear Cliente',
@@ -91,18 +108,13 @@ def eliminar_cliente_page(request,codigo):
         return HttpResponseRedirect(reverse('clientes.views.search_client_page'))
 
     cliente = Cliente.objects.get(codigo=codigo)
-
-    for x in cliente.ordendedespacho_set.all():
-        x.cliente_id = '00'
-        x.save()
-
-    for x in cliente.notadeventa_set.all():
-        x.cliente_id = '00'
-        x.save()
-
+    # only mark as deleted but dont really delete it.
+    cliente.tipo = 'D'
+    cliente.codigo= '.' + cliente.codigo
+    cliente.apellidos = '.' + cliente.apellidos
+    cliente.save()
 
     nombre = cliente.fullname
-    cliente.delete()
 
     return render_to_response('eliminado.html', {'cliente' : nombre})
 
