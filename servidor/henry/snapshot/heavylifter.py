@@ -73,12 +73,14 @@ def get_full_random_revision(bodega, tipo):
 
     all_result = []
     for u in candidates:
-        cant = Contenido.objects.filter(prod__codigo__startswith=u)[:100]
+        cant = Contenido.objects.filter(prod__codigo__startswith=u, 
+                                        bodega_id=bodega, 
+                                        prod__categoria_id=tipo)[:100]
         all_result.extend(cant)
     size = len(all_result)
     contenidos = set()
     while len(contenidos) < 3:
-        contenidos.add(random.randint(0, size-1))
+        contenidos.add(random.randint(0, size))
 
     return [all_result[i] for i in contenidos]
 
