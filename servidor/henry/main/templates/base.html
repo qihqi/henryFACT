@@ -9,7 +9,7 @@
                 border-right-width : 3px;
                 height:100%;
             }
-            .content { float : center;   };
+            .content { float : left;   };
 
         </style>
     {%block script %}
@@ -21,26 +21,13 @@
             <ul>
                 <li> Productos                 
                     <ul>
-                    <li> <a href="/r/producto/create" > Nuevos Productos </a> </li>
+                    <li> <a href="/app/crear_producto" > Nuevos Productos </a> </li>
                     <!--li> <a href="/r/producto/createbodega" > Crear Bodega </a> </li-->
                     <li> <a href="/r/producto/ver" > Ver Productos </a> </li>
-                    <li> <a href="/r/producto/ingreso" > Ingresos </a> </li>
-                    <li> <a href="/r/producto/transferencia" > Transferencia Interna </a> </li>
-                    <li> <a href="/r/producto/transferencia_externa" > Transferencia Externa </a> </li>
-                    <li> <a href="/r/producto/postear_form" >Postear Transferencia</a> </li>
-                    <li> <a href="/r/producto/reenviar" >Reenviar Transferencia</a> </li>
-                    <li> <a href="/r/producto/mod_precio" > Modificar Producto </a> </li>
-                    <li> <a href="/r/snapshot/revision" >Revisar Inventario</a> </li>
+                    <li> <a href="/app/crear_ingreso" > Ingresos </a> </li>
                     </ul>
                 </li>
 
-                <li> Reempaque 
-                    <ul>
-                    <li> <a href="/r/producto/create_regla"> Crear Reglas </a> </li>    
-                    <li> <a href="/r/producto/ver_reglas_form">Ver Reglas de Reempaque </a> </li>    
-                    <li> <a href="/r/producto/reempaque">Reempaque </a> </li>    
-                    </ul>
-                </li>
                 <li> Clientes 
                     <ul>
                     <li> <a href="/r/cliente/create"> Crear Clientes </a> </li>    
@@ -49,16 +36,14 @@
                 </li>
                 <li> Facturacion
                     <ul>
-                        <li> <a href="/r/ventas/resumen"> Resumen de Venta </a></li>
-                        <li> <a href="/r/ventas/eliminar"> Eliminar Factura</a></li>
-                        <li> <a href="/r/ventas/ver_totales"> Resumen General</a></li>
-                        <li> <a href="/r/ventas/ventas_por_productos"> Ventas por Producto</a></li>
+                        <li> <a href="/app/resumen_form"> Resumen de Venta </a></li>
+                        <li> <a href="/app/eliminar_factura"> Eliminar Factura</a></li>
+                        <li> <a href="/app/ver_factura_form">Ver Facturas</a></li>
                     </ul>
                 </li>
                 <li> Administrativo
                     <ul>
                         <li> <a href="/r/sequencia">Cambiar Sequencia</a></li>
-                        <li> <a href="/r/ventas/ver_doc">Ver Documentos</a></li>
                         <li> <a href="/r/createuser">Crear Usuario</a></li>
                     </ul>
                 </li>
